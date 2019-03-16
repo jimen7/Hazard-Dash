@@ -9,5 +9,5 @@ TestScene testLevel;
 
 
 int main() {
-  Engine::Start(1280, 720, "Platformer",&menu);
+  Engine::Start(1980, 1080, "Platformer",&menu);
 }

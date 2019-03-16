@@ -2,6 +2,7 @@
 #include "system_physics.h"
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
+#include <engine.h>
 
 using namespace std;
 using namespace sf;
@@ -58,8 +59,9 @@ void PlayerPhysicsComponent::update(double dt) {
     _grounded = isGrounded();
     if (_grounded) {
       setVelocity(Vector2f(getVelocity().x, 0.f));
-      teleport(Vector2f(pos.x, pos.y - 2.0f));
-      impulse(Vector2f(0, -6.f));
+      teleport(Vector2f(pos.x, pos.y - Engine::getWindowSize().y / 720.0f * 2.0f));
+      impulse(Vector2f(0, Engine::getWindowSize().y / 720.0f * (-6.f)));
+	  cout << Engine::getWindowSize().y << endl;
     }
   }
 
@@ -86,8 +88,8 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p,
                                                const Vector2f& size)
     : PhysicsComponent(p, true, size) {
   _size = sv2_to_bv2(size, true);
-  _maxVelocity = Vector2f(200.f, 400.f);
-  _groundspeed = 30.f;
+  _maxVelocity = Vector2f(Engine::getWindowSize().y / 720.0f * 200.f, Engine::getWindowSize().y / 720.0f * 400.f);
+  _groundspeed = Engine::getWindowSize().y / 720.0f * 30.f;
   _grounded = false;
   _body->SetSleepingAllowed(false);
   _body->SetFixedRotation(true);

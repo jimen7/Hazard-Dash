@@ -12,10 +12,11 @@ using namespace sf;
 static shared_ptr<Entity> player;
 
 void TestScene::Load() {
+  float tileSize = (Engine::getWindowSize().y / 720.0f) * 40.0f;
   cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/test_level.txt", 40.0f);
+  ls::loadLevelFile("res/test_level.txt", tileSize);
 
-  auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
+  auto ho = Engine::getWindowSize().y - (ls::getHeight() * tileSize);
   ls::setOffset(Vector2f(0, ho));
 
   // Create player
@@ -23,11 +24,11 @@ void TestScene::Load() {
     player = makeEntity();
     player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
     auto s = player->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
+    s->setShape<sf::RectangleShape>(Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
     s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(10.f, 15.f);
+    s->getShape().setOrigin(tileSize / 4.0f, tileSize * (3.0f / 8.0f));
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
+    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)));
   }
 
   // Add physics colliders to level tiles.
@@ -35,10 +36,10 @@ void TestScene::Load() {
     auto walls = ls::findTiles(ls::WALL);
     for (auto w : walls) {
       auto pos = ls::getTilePosition(w);
-      pos += Vector2f(20.f, 20.f); //offset to center
+      pos += Vector2f(tileSize / 2.0f, tileSize / 2.0f); //offset to center
       auto e = makeEntity();
       e->setPosition(pos);
-      e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
+      e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
     }
   }
 
