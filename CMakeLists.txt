@@ -72,28 +72,28 @@ target_link_libraries(PRACTICAL_7_PLATFORMER lib_engine)
 set(EXECUTABLES ${EXECUTABLES} PRACTICAL_7_PLATFORMER)
 
 
-# ## 8 - AI Movement
-file(GLOB_RECURSE SOURCES practical_8_steering/*.cpp practical_8_steering/*.h)
-file(GLOB_RECURSE CMPNTS practical_8_steering/components/*.cpp practical_8_steering/components.h)
-file(GLOB_RECURSE SCENES practical_8_steering/scenes/*.cpp practical_8_steering/scenes/*.h)
-add_executable(PRACTICAL_8_STEERING ${SOURCES} ${SCENES})
-source_group("components" FILES ${CMPNTS})
-source_group("resources" FILES ${RESOURCE_FILES})
-target_link_libraries(PRACTICAL_8_STEERING lib_engine)
-set(EXECUTABLES ${EXECUTABLES} PRACTICAL_8_STEERING)
+# # ## 8 - AI Movement
+# file(GLOB_RECURSE SOURCES practical_8_steering/*.cpp practical_8_steering/*.h)
+# file(GLOB_RECURSE CMPNTS practical_8_steering/components/*.cpp practical_8_steering/components.h)
+# file(GLOB_RECURSE SCENES practical_8_steering/scenes/*.cpp practical_8_steering/scenes/*.h)
+# add_executable(PRACTICAL_8_STEERING ${SOURCES} ${SCENES})
+# source_group("components" FILES ${CMPNTS})
+# source_group("resources" FILES ${RESOURCE_FILES})
+# target_link_libraries(PRACTICAL_8_STEERING lib_engine)
+# set(EXECUTABLES ${EXECUTABLES} PRACTICAL_8_STEERING)
 
 
 
 
-# ## 9 - Decisions
-file(GLOB_RECURSE SOURCES practical_9_decisions/*.cpp practical_9_decisions/*.h)
-file(GLOB_RECURSE CMPNTS practical_9_decisions/components/*.cpp practical_9_decisions/components/*.h)
-file(GLOB_RECURSE SCENES practical_9_decisions/scenes/*.cpp practical_9_decisions/scenes/*.h)
-add_executable(PRACTICAL_9_DECISIONS ${SOURCES} ${CMPNTS} ${SCENES} ${RESOURCE_FILES})
-source_group("components" FILES ${CMPNTS})
-source_group("resources" FILES ${RESOURCE_FILES})
-target_link_libraries(PRACTICAL_9_DECISIONS lib_engine)
-set(EXECUTABLES ${EXECUTABLES} PRACTICAL_9_DECISIONS)
+# # ## 9 - Decisions
+# file(GLOB_RECURSE SOURCES practical_9_decisions/*.cpp practical_9_decisions/*.h)
+# file(GLOB_RECURSE CMPNTS practical_9_decisions/components/*.cpp practical_9_decisions/components/*.h)
+# file(GLOB_RECURSE SCENES practical_9_decisions/scenes/*.cpp practical_9_decisions/scenes/*.h)
+# add_executable(PRACTICAL_9_DECISIONS ${SOURCES} ${CMPNTS} ${SCENES} ${RESOURCE_FILES})
+# source_group("components" FILES ${CMPNTS})
+# source_group("resources" FILES ${RESOURCE_FILES})
+# target_link_libraries(PRACTICAL_9_DECISIONS lib_engine)
+# set(EXECUTABLES ${EXECUTABLES} PRACTICAL_9_DECISIONS)
 
 ## 9 - Deployment
 #file(GLOB_RECURSE SOURCES practical_9_deployment/*.cpp practical_9_deployment/*.h)
