@@ -1,0 +1,38 @@
+1) Creating and pushing into a new branch:
+
+In Git 1.7.0 and later, you can checkout a new branch:
+
+git checkout -b <branch>
+Edit files, add and commit. Then push with the -u (short for --set-upstream) option:
+
+git push -u origin <branch>
+Git will set up the tracking information during the push.
+
+
+
+
+2)if you want to download a branch and clone it, clone the master repository and then do:
+
+git checkout <branchname>
+
+and when you want to push back to the Branch do:
+git push -u origin <branchname>
+
+
+
+
+3)Do you want to merge a 'develop' branch into master?  (ALWAYS DO THIS AFTER YOU'VE ALREADY COPMMITED TO BRANCH)
+
+git checkout master
+git merge develop
+
+
+4)Or do you want to merge the changes from master into your development branch?
+
+git checkout develop
+git merge master
+
+
+
+
+
