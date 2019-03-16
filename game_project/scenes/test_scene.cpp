@@ -1,4 +1,4 @@
-#include "scene_level1.h"
+#include "test_scene.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_sprite.h"
 #include "../game.h"
@@ -11,9 +11,9 @@ using namespace sf;
 
 static shared_ptr<Entity> player;
 
-void Level1Scene::Load() {
+void TestScene::Load() {
   cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/level_1.txt", 40.0f);
+  ls::loadLevelFile("res/test_level.txt", 40.0f);
 
   auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
   ls::setOffset(Vector2f(0, ho));
@@ -49,22 +49,22 @@ void Level1Scene::Load() {
   setLoaded(true);
 }
 
-void Level1Scene::UnLoad() {
+void TestScene::UnLoad() {
   cout << "Scene 1 Unload" << endl;
   player.reset();
   ls::unload();
   Scene::UnLoad();
 }
 
-void Level1Scene::Update(const double& dt) {
+void TestScene::Update(const double& dt) {
 
   if (ls::getTileAt(player->getPosition()) == ls::END) {
-    Engine::ChangeScene((Scene*)&level2);
+//    Engine::ChangeScene((Scene*)&level2);
   }
   Scene::Update(dt);
 }
 
-void Level1Scene::Render() {
+void TestScene::Render() {
   ls::render(Engine::GetWindow());
   Scene::Render();
 }
