@@ -11,6 +11,9 @@ using namespace sf;
 
 static shared_ptr<Entity> player;
 
+shared_ptr<sf::Texture> playerSpritesheet;
+
+
 void TestScene::Load() {
   float tileSize = (Engine::getWindowSize().y / 720.0f) * 40.0f;
   cout << " Scene 1 Load" << endl;
@@ -23,10 +26,22 @@ void TestScene::Load() {
   {
     player = makeEntity();
     player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-    auto s = player->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
-    s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(tileSize / 4.0f, tileSize * (3.0f / 8.0f));
+    //auto s = player->addComponent<ShapeComponent>();
+    //s->setShape<sf::RectangleShape>(Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
+    //s->getShape().setFillColor(Color::Magenta);
+    //s->getShape().setOrigin(tileSize / 4.0f, tileSize * (3.0f / 8.0f));
+
+	playerSpritesheet = make_shared<sf::Texture>();
+
+	playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png");
+	if (!playerSpritesheet->loadFromFile("res/img/invaders_sheet.png")) {
+		cerr << "Failed to load spritesheet!" << std::endl;
+	}
+
+	auto s = player->addComponent<SpriteComponent>();
+	s->setTexure(playerSpritesheet);
+	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+
 
     player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)));
   }
@@ -43,8 +58,8 @@ void TestScene::Load() {
     }
   }
 
-  //Simulate long loading times
-  std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
+
   cout << " Scene 1 Load Done" << endl;
 
   setLoaded(true);

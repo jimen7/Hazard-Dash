@@ -9,6 +9,7 @@ void SpriteComponent::setTexure(std::shared_ptr<sf::Texture> tex)
 {
   _texture = tex;
   _sprite->setTexture(*_texture);
+
 }
 
 
@@ -35,3 +36,8 @@ ShapeComponent::ShapeComponent(Entity* p)
     : Component(p), _shape(make_shared<sf::CircleShape>()) {}
 
 sf::Sprite& SpriteComponent::getSprite() const { return *_sprite; }
+
+void SpriteComponent::setTextureRect(const sf::IntRect & rect)
+{
+	_sprite->setTextureRect(rect);
+}
