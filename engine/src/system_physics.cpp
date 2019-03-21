@@ -1,6 +1,7 @@
 
 #include "system_physics.h"
 #include "Box2D/Box2D.h"
+#include "engine.h"
 
 using namespace std;
 using namespace sf;
@@ -11,7 +12,7 @@ const int32 velocityIterations = 6;
 const int32 positionIterations = 2;
 
 void initialise() {
-  b2Vec2 gravity(0.0f, -10.0f);
+  b2Vec2 gravity(0.0f, Engine::getWindowSize().y / 720.0f * -10.0f);
   // Construct a world object, which will hold and simulate the rigid
   // bodies.
   world.reset(new b2World(gravity));
