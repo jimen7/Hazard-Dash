@@ -11,10 +11,13 @@ using namespace sf;
 
 static shared_ptr<Entity> player;
 
+shared_ptr<sf::Texture> playerSpritesheet;
+
+
 void TestScene::Load() {
-  float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
+  float tileSize = (Engine::getWindowSize().y / 720.0f) * 40.0f;
   cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/main_level.txt", tileSize);
+  ls::loadLevelFile("res/test_level.txt", tileSize);
 
   auto ho = Engine::getWindowSize().y - (ls::getHeight() * tileSize);
   ls::setOffset(Vector2f(0, ho));
@@ -23,10 +26,22 @@ void TestScene::Load() {
   {
     player = makeEntity();
     player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-    auto s = player->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
-    s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(tileSize / 4.0f, tileSize * (3.0f / 8.0f));
+    //auto s = player->addComponent<ShapeComponent>();
+    //s->setShape<sf::RectangleShape>(Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
+    //s->getShape().setFillColor(Color::Magenta);
+    //s->getShape().setOrigin(tileSize / 4.0f, tileSize * (3.0f / 8.0f));
+
+	playerSpritesheet = make_shared<sf::Texture>();
+
+	playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png");
+	if (!playerSpritesheet->loadFromFile("res/img/invaders_sheet.png")) {
+		cerr << "Failed to load spritesheet!" << std::endl;
+	}
+
+	auto s = player->addComponent<SpriteComponent>();
+	s->setTexure(playerSpritesheet);
+	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+
 
     player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)));
   }
@@ -34,8 +49,6 @@ void TestScene::Load() {
   // Add physics colliders to level tiles.
   {
     auto walls = ls::findTiles(ls::WALL);
-	auto ground = ls::findTiles(ls::GROUND);
-	walls.insert(walls.end(), ground.begin(), ground.end());
     for (auto w : walls) {
       auto pos = ls::getTilePosition(w);
       pos += Vector2f(tileSize / 2.0f, tileSize / 2.0f); //offset to center
@@ -44,6 +57,8 @@ void TestScene::Load() {
       e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
     }
   }
+
+
 
   cout << " Scene 1 Load Done" << endl;
 
@@ -59,9 +74,9 @@ void TestScene::UnLoad() {
 
 void TestScene::Update(const double& dt) {
 
-//  if (ls::getTileAt(player->getPosition()) == ls::END) {
+  if (ls::getTileAt(player->getPosition()) == ls::END) {
 //    Engine::ChangeScene((Scene*)&level2);
- // }
+  }
   Scene::Update(dt);
 }
 
