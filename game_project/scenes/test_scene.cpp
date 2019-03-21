@@ -15,9 +15,9 @@ shared_ptr<sf::Texture> playerSpritesheet;
 
 
 void TestScene::Load() {
-  float tileSize = (Engine::getWindowSize().y / 720.0f) * 40.0f;
+  float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
   cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/test_level.txt", tileSize);
+  ls::loadLevelFile("res/main_level.txt", tileSize);
 
   auto ho = Engine::getWindowSize().y - (ls::getHeight() * tileSize);
   ls::setOffset(Vector2f(0, ho));
@@ -49,6 +49,8 @@ void TestScene::Load() {
   // Add physics colliders to level tiles.
   {
     auto walls = ls::findTiles(ls::WALL);
+	auto ground = ls::findTiles(ls::GROUND);
+	walls.insert(walls.end(), ground.begin(), ground.end());
     for (auto w : walls) {
       auto pos = ls::getTilePosition(w);
       pos += Vector2f(tileSize / 2.0f, tileSize / 2.0f); //offset to center
@@ -74,9 +76,9 @@ void TestScene::UnLoad() {
 
 void TestScene::Update(const double& dt) {
 
-  if (ls::getTileAt(player->getPosition()) == ls::END) {
+//  if (ls::getTileAt(player->getPosition()) == ls::END) {
 //    Engine::ChangeScene((Scene*)&level2);
-  }
+//  }
   Scene::Update(dt);
 }
 
