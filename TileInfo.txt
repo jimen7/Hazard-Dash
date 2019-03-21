@@ -1,0 +1,11 @@
+TILESET
+
+s - start tile
+g - ground
+" " - Background Wall
+w - wall
+b - basic trap
+l - ladder
+
+
+

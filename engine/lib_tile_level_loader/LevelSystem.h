@@ -19,10 +19,9 @@ public:
   enum TILES {
     EMPTY = ' ',
     START = 's',
-    END = 'e',
     WALL = 'w',
-    ENEMY = 'n',
-    WAYPOINT = '+'
+    LADDER = 'l',
+	GROUND = 'g'
   };
 
   static Tile getTile(sf::Vector2ul);
