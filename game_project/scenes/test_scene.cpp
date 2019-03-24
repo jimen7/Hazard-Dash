@@ -1,5 +1,6 @@
 #include "test_scene.h"
 #include "../components/cmp_player_physics.h"
+#include "../components/cmp_trap.h"
 #include "../components/cmp_sprite.h"
 #include "../game.h"
 #include <LevelSystem.h>
@@ -12,6 +13,7 @@ using namespace sf;
 static shared_ptr<Entity> player;
 
 shared_ptr<sf::Texture> playerSpritesheet;
+
 
 
 void TestScene::Load() {
@@ -50,14 +52,24 @@ void TestScene::Load() {
   {
     auto walls = ls::findTiles(ls::WALL);
 	auto ground = ls::findTiles(ls::GROUND);
+	auto traps = ls::findTiles(ls::TRAP);
 	walls.insert(walls.end(), ground.begin(), ground.end());
+	//walls.insert(walls.end(), traps.begin(), traps.end());
     for (auto w : walls) {
       auto pos = ls::getTilePosition(w);
-      pos += Vector2f(tileSize / 2.0f, tileSize / 2.0f); //offset to center
+      pos += Vector2f(tileSize/2 , tileSize /2); //offset to center
       auto e = makeEntity();
       e->setPosition(pos);
       e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
     }
+	for (auto t : traps) {
+		auto pos = ls::getTilePosition(t);
+		pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
+		auto e = makeEntity();
+		e->setPosition(pos);
+		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
+	}
   }
 
 
@@ -76,10 +88,16 @@ void TestScene::UnLoad() {
 
 void TestScene::Update(const double& dt) {
 
+
+
 //  if (ls::getTileAt(player->getPosition()) == ls::END) {
 //    Engine::ChangeScene((Scene*)&level2);
 //  }
-  Scene::Update(dt);
+
+
+		Scene::Update(dt);
+
+
 }
 
 void TestScene::Render() {

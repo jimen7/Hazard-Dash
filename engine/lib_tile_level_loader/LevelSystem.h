@@ -21,7 +21,8 @@ public:
     START = 's',
     WALL = 'w',
     LADDER = 'l',
-	GROUND = 'g'
+	GROUND = 'g',
+	TRAP = 't'
   };
 
   static Tile getTile(sf::Vector2ul);
