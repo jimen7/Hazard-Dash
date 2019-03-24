@@ -61,7 +61,6 @@ void TestScene::Load() {
   }
 
 
-
   cout << " Scene 1 Load Done" << endl;
 
   setLoaded(true);
