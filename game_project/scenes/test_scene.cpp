@@ -18,6 +18,12 @@ void TestScene::Load() {
   float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
   cout << " Scene 1 Load" << endl;
   ls::loadLevelFile("res/main_level.txt", tileSize);
+  
+  // Sorting the door tiles so the player goes through them sequentially
+  auto doors = ls::findTiles(ls::DOOR);
+  ls::sortTiles(doors);
+
+
 
   auto ho = Engine::getWindowSize().y - (ls::getHeight() * tileSize);
   ls::setOffset(Vector2f(0, ho));
@@ -43,7 +49,7 @@ void TestScene::Load() {
 	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)));
+    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)), doors);
   }
 
   // Add physics colliders to level tiles.

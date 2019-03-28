@@ -5,7 +5,7 @@ using namespace std;
 using namespace sf;
 
 std::map<LevelSystem::Tile, sf::Color> LevelSystem::_colours{
-	{ WALL, Color::White },{ LADDER, Color::Red },{ GROUND, Color::Green} };
+	{ WALL, Color::White },{ DOOR, Color::Red },{ GROUND, Color::Green} };
 
 sf::Color LevelSystem::getColor(LevelSystem::Tile t) {
 	auto it = _colours.find(t);
@@ -214,6 +214,14 @@ LevelSystem::Tile LevelSystem::getTileAt(Vector2f v) {
 		throw string("Tile out of range ");
 	}
 	return getTile(Vector2ul((v - _offset) / (_tileSize)));
+}
+
+void LevelSystem::sortTiles(std::vector <sf::Vector2ul> &tiles) {
+
+	std::sort(std::begin(tiles), std::end(tiles), 
+		[](sf::Vector2ul a, sf::Vector2ul b) {return (a.x < b.x) || ((a.x == b.x) && (a.y < b.y)); }
+	);
+
 }
 
 bool LevelSystem::isOnGrid(sf::Vector2f v) {

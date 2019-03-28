@@ -6,6 +6,7 @@ class PlayerPhysicsComponent : public PhysicsComponent {
 protected:
   b2Vec2 _size;
   sf::Vector2f _maxVelocity;
+  std::vector <sf::Vector2ul> _doors;
   bool _grounded;
   float _groundspeed;
 
@@ -14,7 +15,7 @@ protected:
 public:
   void update(double dt) override;
 
-  explicit PlayerPhysicsComponent(Entity* p, const sf::Vector2f& size);
+  explicit PlayerPhysicsComponent(Entity* p, const sf::Vector2f& size, const std::vector <sf::Vector2ul> doors);
 
   PlayerPhysicsComponent() = delete;
 

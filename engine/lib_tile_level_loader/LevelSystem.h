@@ -20,7 +20,7 @@ public:
     EMPTY = ' ',
     START = 's',
     WALL = 'w',
-    LADDER = 'l',
+    DOOR = 'd',
 	GROUND = 'g'
   };
 
@@ -47,6 +47,8 @@ public:
   static const sf::Vector2f& getOffset();
 
   static float getTileSize();
+
+  static void LevelSystem::sortTiles(std::vector <sf::Vector2ul> &tiles);
 
 protected:
   static std::unique_ptr<Tile[]> _tiles;

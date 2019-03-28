@@ -8,6 +8,7 @@ using namespace std;
 using namespace sf;
 using namespace Physics;
 
+
 bool PlayerPhysicsComponent::isGrounded() const {
   auto touch = getTouching();
   const auto& pos = _body->GetPosition();
@@ -29,11 +30,6 @@ bool PlayerPhysicsComponent::isGrounded() const {
 
   return false;
 }
-//
-//bool PlayerPhysicsComponent::isLadder() {
-//	if (ls::getTileAt(_parent->getPosition()) != ls::LADDER)
-//		return true;
-//}
 
 void PlayerPhysicsComponent::update(double dt) {
 
@@ -42,6 +38,10 @@ void PlayerPhysicsComponent::update(double dt) {
   //Teleport to start if we fall off map.
   if (pos.y > ls::getHeight() * ls::getTileSize()) {
     teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+  }
+
+  if (ls::getTileAt(pos) == ls::DOOR) {
+	  cout << "DOOR" << endl;
   }
 
   if (Keyboard::isKeyPressed(Keyboard::Left) ||
@@ -70,12 +70,6 @@ void PlayerPhysicsComponent::update(double dt) {
     }
   }
 
-  // Are we on the ladder then offset the gravity
-  //if (isLadder()) {
-//	  //setVelocity(Vector2f(0.0f, 10.f));
-//	  impulse(Vector2f(0.0f, 10.f));
- // }
-
   //Are we in air?
   if (!_grounded) {
     // Check to see if we have landed yet
@@ -96,8 +90,9 @@ void PlayerPhysicsComponent::update(double dt) {
 }
 
 PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p,
-                                               const Vector2f& size)
+                                               const Vector2f& size, const std::vector <sf::Vector2ul> doors)
     : PhysicsComponent(p, true, size) {
+  _doors = doors;
   _size = sv2_to_bv2(size, true);
   _maxVelocity = Vector2f(Engine::getWindowSize().y / 720.0f * 200.f, Engine::getWindowSize().y / 720.0f * 400.f);
   _groundspeed = Engine::getWindowSize().y / 720.0f * 30.f;
