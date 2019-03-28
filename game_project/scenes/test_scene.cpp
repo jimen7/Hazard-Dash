@@ -12,6 +12,9 @@ using namespace sf;
 
 static shared_ptr<Entity> player;
 
+int heroes_num = 1;
+std::vector<shared_ptr<Entity>> heroes;
+
 shared_ptr<sf::Texture> playerSpritesheet;
 
 
@@ -25,7 +28,8 @@ void TestScene::Load() {
   ls::setOffset(Vector2f(0, ho));
 
   // Create player
-  {
+
+  for (int i=0;i<heroes_num;i++){
     player = makeEntity();
     player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
     //auto s = player->addComponent<ShapeComponent>();
@@ -46,7 +50,15 @@ void TestScene::Load() {
 
 
     player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)));
+	//player->addComponent<TrapComponent>(player, Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
+	//TrapComponent::setPlayer(player);
+	heroes.push_back(player);
   }
+
+  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to poiunt to outr hero list
+
+
+  //TrapComponent::player = player.get();
 
   // Add physics colliders to level tiles.
   {
