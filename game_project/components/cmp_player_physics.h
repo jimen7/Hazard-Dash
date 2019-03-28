@@ -10,7 +10,6 @@ protected:
   float _groundspeed;
 
   bool isGrounded() const;
-  bool isLadder();
 
 public:
   void update(double dt) override;

@@ -71,10 +71,10 @@ void PlayerPhysicsComponent::update(double dt) {
   }
 
   // Are we on the ladder then offset the gravity
-  if (isLadder()) {
-	  //setVelocity(Vector2f(0.0f, 10.f));
-	  impulse(Vector2f(0.0f, 10.f));
-  }
+  //if (isLadder()) {
+//	  //setVelocity(Vector2f(0.0f, 10.f));
+//	  impulse(Vector2f(0.0f, 10.f));
+ // }
 
   //Are we in air?
   if (!_grounded) {
