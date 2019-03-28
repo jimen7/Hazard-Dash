@@ -21,7 +21,7 @@ std::vector<std::shared_ptr<Entity>>* TrapComponent::heroes_list;
 
 void TrapComponent::TrapPlayer(Entity * e)
 {
-	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(_pushForce, -_pushForce));
+	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0, -_pushForce));
 }
 
 void TrapComponent::update(double dt)
@@ -39,9 +39,8 @@ void TrapComponent::update(double dt)
 
 
 TrapComponent::TrapComponent(Entity* p, const sf::Vector2f& size) : Component(p) {
-
 	_damage = 10;
-	_pushForce = 80.0f;
+	_pushForce = 0.03f;
 }
 
 void SpikeTrapComponent::TrapPlayer(Entity * e)
