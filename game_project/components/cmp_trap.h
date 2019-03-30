@@ -14,7 +14,7 @@ protected:
 
 public:
 	static std::vector<std::shared_ptr<Entity>>* heroes_list;	//Points to the list in our main scene of the heroes
-	virtual void TrapPlayer(Entity* e);
+	virtual void TrapPlayer(Entity* e, sf::Vector2f direction);
 	void update(double dt) override;
 	void render() override {};
 
@@ -28,6 +28,6 @@ public:
 class SpikeTrapComponent : public TrapComponent {
 
 public:
-	void TrapPlayer(Entity* e) override;
+	void TrapPlayer(Entity* e, sf::Vector2f direction) override;
 
 };

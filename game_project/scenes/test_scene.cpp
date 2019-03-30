@@ -19,6 +19,8 @@ shared_ptr<sf::Texture> playerSpritesheet;
 
 
 
+
+
 void TestScene::Load() {
   float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
   cout << " Scene 1 Load" << endl;
@@ -29,7 +31,7 @@ void TestScene::Load() {
 
   // Create player
 
-  for (int i=0;i<heroes_num;i++){
+  for (int i = 0; i < heroes_num; i++) {
     player = makeEntity();
     player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
     //auto s = player->addComponent<ShapeComponent>();
@@ -50,23 +52,19 @@ void TestScene::Load() {
 
 
     player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)));
-	//player->addComponent<TrapComponent>(player, Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
-	//TrapComponent::setPlayer(player);
-	heroes.push_back(player);
+	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
+											//we confirmed that the references are not deleted so that should not be causing an issue.
   }
 
-  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to poiunt to outr hero list
 
 
-  //TrapComponent::player = player.get();
-
+  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to point to our hero list
   // Add physics colliders to level tiles.
   {
     auto walls = ls::findTiles(ls::WALL);
 	auto ground = ls::findTiles(ls::GROUND);
 	auto traps = ls::findTiles(ls::TRAP);
 	walls.insert(walls.end(), ground.begin(), ground.end());
-	//walls.insert(walls.end(), traps.begin(), traps.end());
     for (auto w : walls) {
       auto pos = ls::getTilePosition(w);
       pos += Vector2f(tileSize/2 , tileSize /2); //offset to center

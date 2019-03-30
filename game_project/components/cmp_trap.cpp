@@ -19,17 +19,19 @@ std::vector<std::shared_ptr<Entity>>* TrapComponent::heroes_list;
 //}
 
 
-void TrapComponent::TrapPlayer(Entity * e)
+void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
-	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0, -_pushForce));
+
+	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);
 }
 
 void TrapComponent::update(double dt)
 {
 	for (auto hero_ptr : *heroes_list) {
-		const auto l = sf::length((hero_ptr)->getPosition() - _parent->getPosition());
+		const auto dir = (hero_ptr)->getPosition() - _parent->getPosition();
+		const auto l = sf::length(dir);
 		if (l < 70.0) {
-			TrapPlayer(hero_ptr.get());
+			TrapPlayer(hero_ptr.get(), dir);
 		}
 
 	}
@@ -40,10 +42,12 @@ void TrapComponent::update(double dt)
 
 TrapComponent::TrapComponent(Entity* p, const sf::Vector2f& size) : Component(p) {
 	_damage = 10;
+
+
 	_pushForce = 0.03f;
 }
 
-void SpikeTrapComponent::TrapPlayer(Entity * e)
+void SpikeTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 {
 
 }
