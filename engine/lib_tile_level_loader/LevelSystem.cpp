@@ -1,4 +1,5 @@
 #include "LevelSystem.h"
+
 #include <fstream>
 
 using namespace std;
@@ -87,16 +88,28 @@ void LevelSystem::buildSprites(bool optimise) {
 		sf::Vector2f p;
 		sf::Vector2f s;
 		sf::Color c;
+		bool isAtexture;
+		sf::IntRect ir;
+		std::shared_ptr<sf::Texture> tex;
 	};
+	backroundSpritesheet = make_shared<Texture>();
+	backroundSpritesheet->loadFromFile("res/Sprites/castle_tileset_part_EditedBACK.png");
+	if (!backroundSpritesheet->loadFromFile("res/Sprites/castle_tileset_part_EditedBACK.png")) {
+		cerr << "Failed to load backround spritesheet!" << std::endl;
+	}
+
+
+
 	vector<tp> tps;
 	const auto tls = Vector2f(_tileSize, _tileSize);
 	for (size_t y = 0; y < _height; ++y) {
 		for (size_t x = 0; x < _width; ++x) {
 			Tile t = getTile({ x, y });
 			if (t == EMPTY) {
-				backroundSpritesheet = make_shared<Texture>();
+				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t),true,sf::IntRect(64, 30, 32, 32), backroundSpritesheet, });
+			}else{
+				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t) });
 			}
-			tps.push_back({ getTilePosition({ x, y }), tls, getColor(t) });
 		}
 	}
 
@@ -115,7 +128,7 @@ void LevelSystem::buildSprites(bool optimise) {
 			bool same = ((tps[i].p.y == last.p.y) &&
 				(tps[i].p.x == last.p.x + (tls.x * (1 + samecount))) &&
 				(tps[i].c == last.c));
-			if (same) {
+			if (same && !tps[i].isAtexture) {
 				++samecount; // Yes, keep going
 							 // tps[i].c = Color::Green;
 			}
@@ -146,7 +159,7 @@ void LevelSystem::buildSprites(bool optimise) {
 				bool same = ((tpo[j].p.x == last.p.x) && (tpo[j].s == last.s) &&
 					(tpo[j].p.y == last.p.y + (tls.y * (1 + samecount))) &&
 					(tpo[j].c == last.c));
-				if (same) {
+				if (same && !tpo[j].isAtexture) {
 					++samecount;
 					tpo.erase(tpo.begin() + j);
 					--j;
@@ -167,8 +180,15 @@ void LevelSystem::buildSprites(bool optimise) {
 		auto s = make_unique<sf::RectangleShape>();
 		s->setPosition(t.p);
 		s->setSize(t.s);
-		s->setFillColor(Color::Red);
-		s->setFillColor(t.c);
+
+		if(t.isAtexture){
+			s->setTexture(t.tex.get());
+			s->setTextureRect(t.ir);
+
+		}else{
+			s->setFillColor(Color::Red);
+			s->setFillColor(t.c);
+		}
 		// s->setFillColor(Color(rand()%255,rand()%255,rand()%255));
 		_sprites.push_back(move(s));
 	}
