@@ -77,7 +77,7 @@ void TestScene::Load() {
 		pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
 		auto e = makeEntity();
 		e->setPosition(pos);
-		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+		//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
 	}
   }
@@ -91,6 +91,7 @@ void TestScene::Load() {
 
 void TestScene::UnLoad() {
   cout << "Scene 1 Unload" << endl;
+  heroes.clear();
   player.reset();
   ls::unload();
   Scene::UnLoad();

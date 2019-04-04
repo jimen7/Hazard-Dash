@@ -4,6 +4,8 @@
 using namespace std;
 using namespace sf;
 
+shared_ptr<sf::Texture> backroundSpritesheet;
+
 std::map<LevelSystem::Tile, sf::Color> LevelSystem::_colours{
 	{ WALL, Color::White },{ LADDER, Color::Red },{ GROUND, Color::Green}, { TRAP, Color::Yellow} };
 
@@ -92,7 +94,7 @@ void LevelSystem::buildSprites(bool optimise) {
 		for (size_t x = 0; x < _width; ++x) {
 			Tile t = getTile({ x, y });
 			if (t == EMPTY) {
-				continue;
+				backroundSpritesheet = make_shared<Texture>();
 			}
 			tps.push_back({ getTilePosition({ x, y }), tls, getColor(t) });
 		}
