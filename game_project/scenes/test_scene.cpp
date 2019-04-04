@@ -48,7 +48,7 @@ void TestScene::Load() {
 	playerSpritesheet = make_shared<sf::Texture>();
 
 	playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png");
-	if (!playerSpritesheet->loadFromFile("res/img/invaders_sheet.png")) {
+	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png")) {
 		cerr << "Failed to load spritesheet!" << std::endl;
 	}
 

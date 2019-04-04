@@ -21,7 +21,6 @@ std::vector<std::shared_ptr<Entity>>* TrapComponent::heroes_list;
 
 void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
-
 	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);
 }
 

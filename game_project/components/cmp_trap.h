@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cmp_sprite.h"
-#include "cmp_physics.h"
 #include "ecm.h"
 #include <Box2D/Dynamics/b2Body.h>
 
