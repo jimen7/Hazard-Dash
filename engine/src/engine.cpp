@@ -18,6 +18,8 @@ static float loadingspinner = 0.f;
 static float loadingTime;
 static RenderWindow* _window;
 
+bool gamePause = false;
+
 void Loading_update(float dt, const Scene* const scn) {
   //  cout << "Eng: Loading Screen\n";
   if (scn->isLoaded()) {
@@ -64,6 +66,8 @@ void Engine::Update() {
   if (loading) {
     Loading_update(dt, _activeScene);
   } else if (_activeScene != nullptr) {
+
+
     Physics::update(dt);
     _activeScene->Update(dt);
   }
@@ -98,8 +102,16 @@ void Engine::Start(unsigned int width, unsigned int height,
       window.close();
     }
 
+	if (Keyboard::isKeyPressed(Keyboard::P)) {
+		gamePause = !gamePause;
+	}
+
     window.clear();
-    Update();
+
+	if (!gamePause) {
+		Update();
+	}
+
     Render(window);
     window.display();
   }

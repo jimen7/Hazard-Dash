@@ -1,5 +1,6 @@
 #include "test_scene.h"
 #include "../components/cmp_player_physics.h"
+#include "../components/cmp_trap.h"
 #include "../components/cmp_sprite.h"
 #include "../game.h"
 #include <LevelSystem.h>
@@ -11,7 +12,13 @@ using namespace sf;
 
 static shared_ptr<Entity> player;
 
+int heroes_num = 1;
+std::vector<shared_ptr<Entity>> heroes;
+
 shared_ptr<sf::Texture> playerSpritesheet;
+
+
+
 
 
 void TestScene::Load() {
@@ -29,7 +36,8 @@ void TestScene::Load() {
   ls::setOffset(Vector2f(0, ho));
 
   // Create player
-  {
+
+  for (int i = 0; i < heroes_num; i++) {
     player = makeEntity();
     player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
     //auto s = player->addComponent<ShapeComponent>();
@@ -50,20 +58,34 @@ void TestScene::Load() {
 
 
     player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)), doors);
+	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
+											//we confirmed that the references are not deleted so that should not be causing an issue.
   }
 
+
+
+  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to point to our hero list
   // Add physics colliders to level tiles.
   {
     auto walls = ls::findTiles(ls::WALL);
 	auto ground = ls::findTiles(ls::GROUND);
+	auto traps = ls::findTiles(ls::TRAP);
 	walls.insert(walls.end(), ground.begin(), ground.end());
     for (auto w : walls) {
       auto pos = ls::getTilePosition(w);
-      pos += Vector2f(tileSize / 2.0f, tileSize / 2.0f); //offset to center
+      pos += Vector2f(tileSize/2 , tileSize /2); //offset to center
       auto e = makeEntity();
       e->setPosition(pos);
       e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
     }
+	for (auto t : traps) {
+		auto pos = ls::getTilePosition(t);
+		pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
+		auto e = makeEntity();
+		e->setPosition(pos);
+		//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
+	}
   }
 
 
@@ -74,6 +96,7 @@ void TestScene::Load() {
 
 void TestScene::UnLoad() {
   cout << "Scene 1 Unload" << endl;
+  heroes.clear();
   player.reset();
   ls::unload();
   Scene::UnLoad();
@@ -81,10 +104,16 @@ void TestScene::UnLoad() {
 
 void TestScene::Update(const double& dt) {
 
+
+
 //  if (ls::getTileAt(player->getPosition()) == ls::END) {
 //    Engine::ChangeScene((Scene*)&level2);
 //  }
-  Scene::Update(dt);
+
+
+		Scene::Update(dt);
+
+
 }
 
 void TestScene::Render() {

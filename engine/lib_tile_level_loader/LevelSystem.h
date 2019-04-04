@@ -22,6 +22,7 @@ public:
     WALL = 'w',
     DOOR = 'd',
 	GROUND = 'g'
+	TRAP = 't'
   };
 
   static Tile getTile(sf::Vector2ul);
