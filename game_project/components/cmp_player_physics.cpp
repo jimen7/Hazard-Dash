@@ -29,6 +29,11 @@ bool PlayerPhysicsComponent::isGrounded() const {
 
   return false;
 }
+//
+//bool PlayerPhysicsComponent::isLadder() {
+//	if (ls::getTileAt(_parent->getPosition()) != ls::LADDER)
+//		return true;
+//}
 
 void PlayerPhysicsComponent::update(double dt) {
 
@@ -64,6 +69,12 @@ void PlayerPhysicsComponent::update(double dt) {
 	  cout << Engine::getWindowSize().y << endl;
     }
   }
+
+  // Are we on the ladder then offset the gravity
+  //if (isLadder()) {
+//	  //setVelocity(Vector2f(0.0f, 10.f));
+//	  impulse(Vector2f(0.0f, 10.f));
+ // }
 
   //Are we in air?
   if (!_grounded) {

@@ -17,4 +17,5 @@ public:
   explicit PlayerPhysicsComponent(Entity* p, const sf::Vector2f& size);
 
   PlayerPhysicsComponent() = delete;
+
 };
