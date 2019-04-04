@@ -8,7 +8,7 @@ using namespace sf;
 shared_ptr<sf::Texture> backroundSpritesheet;
 
 std::map<LevelSystem::Tile, sf::Color> LevelSystem::_colours{
-	{ WALL, Color::White },{ LADDER, Color::Red },{ GROUND, Color::Green}, { TRAP, Color::Yellow} };
+	{ WALL, Color::White }, { GROUND, Color::Green }, { TRAP, Color::Yellow }, { DOOR, Color::Red } };
 
 sf::Color LevelSystem::getColor(LevelSystem::Tile t) {
 	auto it = _colours.find(t);
@@ -107,7 +107,8 @@ void LevelSystem::buildSprites(bool optimise) {
 			Tile t = getTile({ x, y });
 			if (t == EMPTY) {
 				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t),true,sf::IntRect(64, 30, 32, 32), backroundSpritesheet, });
-			}else{
+			}
+			else {
 				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t) });
 			}
 		}
@@ -181,11 +182,12 @@ void LevelSystem::buildSprites(bool optimise) {
 		s->setPosition(t.p);
 		s->setSize(t.s);
 
-		if(t.isAtexture){
+		if (t.isAtexture) {
 			s->setTexture(t.tex.get());
 			s->setTextureRect(t.ir);
 
-		}else{
+		}
+		else {
 			s->setFillColor(Color::Red);
 			s->setFillColor(t.c);
 		}
@@ -240,7 +242,7 @@ LevelSystem::Tile LevelSystem::getTileAt(Vector2f v) {
 
 void LevelSystem::sortTiles(std::vector <sf::Vector2ul> &tiles) {
 
-	std::sort(std::begin(tiles), std::end(tiles), 
+	std::sort(std::begin(tiles), std::end(tiles),
 		[](sf::Vector2ul a, sf::Vector2ul b) {return (a.x < b.x) || ((a.x == b.x) && (a.y < b.y)); }
 	);
 

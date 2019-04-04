@@ -21,7 +21,7 @@ public:
     START = 's',
     WALL = 'w',
     DOOR = 'd',
-	GROUND = 'g'
+	GROUND = 'g',
 	TRAP = 't'
   };
 
