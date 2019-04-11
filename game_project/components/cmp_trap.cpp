@@ -35,9 +35,9 @@ void TrapComponent::update(double dt)
 		_timer -= dt;
 	}
 	else{
-		auto collidngObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();
+		auto collidingObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();
 
-		for (auto k : collidngObjects) {
+		for (auto k : collidingObjects) {
 			Entity* e1 = (Entity*)k->GetFixtureA()->GetUserData();
 			Entity* e2 = (Entity*)k->GetFixtureB()->GetUserData();
 			Entity* other;

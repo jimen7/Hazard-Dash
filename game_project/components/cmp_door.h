@@ -5,7 +5,7 @@
 
 class DoorComponent : public Component {
 protected:
-	sf::Vector2ul _nextDoor;
+	sf::Vector2f _nextDoor;
 	bool _enterDoor;
 
 
