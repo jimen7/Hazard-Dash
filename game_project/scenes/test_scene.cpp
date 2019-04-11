@@ -2,6 +2,7 @@
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_trap.h"
 #include "../components/cmp_sprite.h"
+#include "../components/cmp_health.h"
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
@@ -14,6 +15,8 @@ static shared_ptr<Entity> player;
 
 int heroes_num = 1;
 std::vector<shared_ptr<Entity>> heroes;
+
+std::vector<int> indexOfHeroesToRemove;
 
 shared_ptr<sf::Texture> playerSpritesheet;
 
@@ -58,13 +61,14 @@ void TestScene::Load() {
 
 
     player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)), doors);
+	player->addComponent<HealthComponent>(100.0f);
 	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
   }
 
 
 
-  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to point to our hero list
+//  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to point to our hero list
   // Add physics colliders to level tiles.
   {
     auto walls = ls::findTiles(ls::WALL);
@@ -83,7 +87,7 @@ void TestScene::Load() {
 		pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
 		auto e = makeEntity();
 		e->setPosition(pos);
-		//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
 	}
   }
@@ -110,10 +114,19 @@ void TestScene::Update(const double& dt) {
 //    Engine::ChangeScene((Scene*)&level2);
 //  }
 
-
+	indexOfHeroesToRemove.clear();
 		Scene::Update(dt);
 
+		
+		for (int i = 0; i < heroes.size();i++) {
+			if (heroes[i]==NULL) {
+				indexOfHeroesToRemove.push_back(i);
+			}
+		}
 
+		for (int i = 0; i < indexOfHeroesToRemove.size(); i++) {
+			heroes.erase(heroes.begin()+i);
+		}
 }
 
 void TestScene::Render() {
