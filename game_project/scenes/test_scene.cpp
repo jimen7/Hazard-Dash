@@ -1,6 +1,7 @@
 #include "test_scene.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_trap.h"
+#include "../components/cmp_door.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_health.h"
 #include "../game.h"
@@ -90,6 +91,24 @@ void TestScene::Load() {
 		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
 	}
+  }
+
+  // Sorting the door tiles so the player goes through them sequentially
+  {
+	  std::vector<sf::Vector2ul> doors = ls::findTiles(ls::DOOR);
+	  ls::sortTiles(doors);
+	  for (int i = 0; i < doors.size(); i++) {
+		  auto pos = ls::getTilePosition(doors[i]);
+		  pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
+		  auto e = makeEntity();
+		  e->setPosition(pos);
+		  if (i % 2 == 0 && i != doors.size() - 1)
+			  e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[i + 1]));
+		  else
+			  e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize));
+		  e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+
+	  }
   }
 
 
