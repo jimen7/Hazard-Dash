@@ -243,7 +243,7 @@ LevelSystem::Tile LevelSystem::getTileAt(Vector2f v) {
 void LevelSystem::sortTiles(std::vector <sf::Vector2ul> &tiles) {
 
 	std::sort(std::begin(tiles), std::end(tiles),
-		[](sf::Vector2ul a, sf::Vector2ul b) {return (a.x < b.x) || ((a.x == b.x) && (a.y < b.y)); }
+		[](sf::Vector2ul a, sf::Vector2ul b) {return (a.y > b.y) || ((a.y == b.y) && (a.x > b.x)); }
 	);
 
 }

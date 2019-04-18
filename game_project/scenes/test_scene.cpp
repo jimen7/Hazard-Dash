@@ -102,7 +102,7 @@ void TestScene::Load() {
 		  pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
 		  auto e = makeEntity();
 		  e->setPosition(pos);
-		  if (i % 2 == 1 && i != doors.size() - 1)
+		  if (i % 2 == 0 && i != doors.size() - 1)
  			  e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[i + 1]));
 		  else
 			  e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize));
