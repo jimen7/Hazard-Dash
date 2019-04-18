@@ -89,7 +89,14 @@ void TestScene::Load() {
 		auto e = makeEntity();
 		e->setPosition(pos);
 		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
+		//e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
+		e->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
+		auto s = e->addComponent<ShapeComponent>();
+		s->setShape<RectangleShape>();
+		s->getShape().setFillColor(Color::Black);
+
+		//e->addComponent<ShapeComponent>();
+
 	}
   }
 
