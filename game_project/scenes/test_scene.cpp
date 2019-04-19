@@ -91,11 +91,10 @@ void TestScene::Load() {
 		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		//e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
 		e->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
-		auto s = e->addComponent<ShapeComponent>();
-		s->setShape<RectangleShape>();
-		s->getShape().setFillColor(Color::Black);
+		//auto s = e->addComponent<ShapeComponent>();
+		//s->setShape<RectangleShape>();
+		//s->getShape().setFillColor(Color::Black);
 
-		//e->addComponent<ShapeComponent>();
 
 	}
   }
@@ -114,6 +113,7 @@ void TestScene::Load() {
 		  else
 			  e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize));
 		  e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+		  ls::setColor(LevelSystem::TRAP, Color::Magenta);
 
 	  }
   }
@@ -153,6 +153,7 @@ void TestScene::Update(const double& dt) {
 		for (int i = 0; i < indexOfHeroesToRemove.size(); i++) {
 			heroes.erase(heroes.begin()+i);
 		}
+
 }
 
 void TestScene::Render() {

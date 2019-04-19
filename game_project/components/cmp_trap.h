@@ -12,6 +12,7 @@ protected:
 	double _damage;
 	float _pushForce;
 	float _timer=0;
+	sf::Color _trap_colour = sf::Color::White;
 	int _trapType=0;  //0 is deafult for testing(Spikes), 1 is OP spikes  for nopw 
 
 public:
@@ -19,6 +20,8 @@ public:
 	virtual void TrapPlayer(Entity* e, sf::Vector2f direction);
 	void update(double dt) override;
 	void render() override {};
+	void placeTrap();
+	//void removeTrap();
 
 	explicit TrapComponent(Entity* p, const sf::Vector2f& size);
 
@@ -28,9 +31,21 @@ public:
 
 
 class SpikeTrapComponent : public TrapComponent {
+private:
+	//string description = "Spikes";
 
 public:
 	void TrapPlayer(Entity* e, sf::Vector2f direction) override;
 	explicit SpikeTrapComponent(Entity* p, const sf::Vector2f& size);
+
+};
+
+class MineTrapComponent : public TrapComponent {
+private:
+	//string description = "Mine";
+
+public:
+	void TrapPlayer(Entity* e, sf::Vector2f direction) override;
+	explicit MineTrapComponent(Entity* p, const sf::Vector2f& size);
 
 };
