@@ -6,15 +6,20 @@
 #include <mutex>
 #include <string>
 
+#define GAMEX 1920
+#define GAMEY 1080
+
 class Scene {
 public:
   Scene() = default;
   virtual ~Scene();
-  virtual void Load() = 0;
+  virtual void Load();
   virtual void LoadAsync();
   virtual void UnLoad();
   virtual void Update(const double& dt);
   virtual void Render();
+  sf::FloatRect CalculateViewport(const sf::Vector2u& screensize,
+	  const sf::Vector2u& gamesize);
   bool isLoaded() const;
   std::shared_ptr<Entity> makeEntity();
 
