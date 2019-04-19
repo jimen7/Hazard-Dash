@@ -29,7 +29,7 @@ void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 
 
 void TrapComponent::placeTrap() {
-
+	//_parent->removeComponent<TrapComponent>();
 }
 
 void TrapComponent::update(double dt)
@@ -49,11 +49,11 @@ void TrapComponent::update(double dt)
 	auto c = ls::getTileAt(_parent->getPosition());
 		if (l < 40.0) {
 
-			_trap_colour = _selected_trap_colour;
+			_trap_colour = _selected_trap_colour;	//Set the print colour tpo be highlighted
 
 			}
 		else {
-			_trap_colour = _original_trap_colour;
+			_trap_colour = _original_trap_colour;	//Set the print colout to be the original
 		}
 
 	if (_timer >= 0) {

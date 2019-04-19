@@ -17,7 +17,7 @@ protected:
 	int _trapType = 0;  //0 is deafult for testing(Spikes), 1 is OP spikes  for nopw 
 
 	//Colour stuff
-	sf::Color _trap_colour;	//THIS IS WHAT WILL RENDER ON THE SCREEN
+	sf::Color _trap_colour;	//THIS IS WHAT IS ON THE RENDERERE ON THE SCREEN
 	sf::Color _selected_trap_colour = sf::Color::Magenta;	//When hovering over Trap colour will change tro magenta
 	sf::Color _original_trap_colour = sf::Color::White;		//Each trap will have a different colour. For empty trap it is white
 	sf::RectangleShape _rs;
