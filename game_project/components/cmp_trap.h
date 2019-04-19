@@ -3,6 +3,7 @@
 #include "cmp_sprite.h"
 #include "ecm.h"
 #include <Box2D/Dynamics/b2Body.h>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 
 class TrapComponent : public Component {
@@ -12,14 +13,20 @@ protected:
 	double _damage;
 	float _pushForce;
 	float _timer=0;
-	sf::Color _trap_colour = sf::Color::White;
-	int _trapType=0;  //0 is deafult for testing(Spikes), 1 is OP spikes  for nopw 
+
+	int _trapType = 0;  //0 is deafult for testing(Spikes), 1 is OP spikes  for nopw 
+
+	//Colour stuff
+	sf::Color _trap_colour;	//THIS IS WHAT WILL RENDER ON THE SCREEN
+	sf::Color _selected_trap_colour = sf::Color::Magenta;	//When hovering over Trap colour will change tro magenta
+	sf::Color _original_trap_colour = sf::Color::White;		//Each trap will have a different colour. For empty trap it is white
+	sf::RectangleShape _rs;
 
 public:
 	//static std::vector<std::shared_ptr<Entity>>* heroes_list;	//Points to the list in our main scene of the heroes
 	virtual void TrapPlayer(Entity* e, sf::Vector2f direction);
 	void update(double dt) override;
-	void render() override {};
+	void render() override;
 	void placeTrap();
 	//void removeTrap();
 

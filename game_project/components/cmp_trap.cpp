@@ -2,6 +2,7 @@
 #include "cmp_physics.h"
 #include "cmp_health.h"
 #include "cmp_text.h"
+#include "system_renderer.h"
 
 #include "system_physics.h"
 #include <LevelSystem.h>
@@ -17,12 +18,12 @@ using namespace Physics;
 //Vector2f tilePos;
 
 
-
+float tileSize =30.0f;
 
 void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
-	
-	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);
+	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
+	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);
 	e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
 }
 
@@ -46,22 +47,13 @@ void TrapComponent::update(double dt)
 	//auto s = _parent->get_components<ShapeComponent>();
 
 	auto c = ls::getTileAt(_parent->getPosition());
-		if (l < 70.0) {
+		if (l < 40.0) {
 
-			//ls::setColor(LevelSystem::getTileAt(ls::getTilePosition(t)), Color::Magenta);
-			LevelSystem::setColor(c, Color::Black);
-			//s[0]->getShape().setFillColor(Color::Blue);	//If this line is removed, current colour is changed, whichg means that the colour is changing but not drawn on the screen
-
-
-			//USING SHAPE
-			//auto currentColor = s[0]->getShape().getFillColor();
-			int i = 9;		//DEBBUG POINT
-
-
+			_trap_colour = _selected_trap_colour;
 
 			}
 		else {
-			//s[0]->getShape().setFillColor(Color::Black);
+			_trap_colour = _original_trap_colour;
 		}
 
 	if (_timer >= 0) {
@@ -95,12 +87,20 @@ void TrapComponent::update(double dt)
 
 }
 
+void TrapComponent::render() {
+	_rs.setFillColor(_trap_colour);
+	_rs.setSize({ tileSize ,tileSize});
+	_rs.setPosition(_parent->getPosition() + Vector2f(-15.0f, -15.0f));
+	Renderer::queue(&_rs);
+}
+
 
 TrapComponent::TrapComponent(Entity* p, const sf::Vector2f& size) : Component(p) {
 	_damage = 10;
 
 	//_pushForce = 1.03f;
 	_pushForce = 0.03f;
+
 }
 
 void SpikeTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
@@ -111,7 +111,7 @@ void SpikeTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 
 SpikeTrapComponent::SpikeTrapComponent(Entity* p, const sf::Vector2f& size) : TrapComponent(p,size) {
 	_damage = 10;
-	_trap_colour = sf::Color::Black;
+	_original_trap_colour = sf::Color::Black;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
 }
