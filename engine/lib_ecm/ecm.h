@@ -91,13 +91,13 @@ public:
     return sp;
   }
 
-  //template <typename T, typename... Targs>
-  //std::shared_ptr<T> removeComponent(Targs... params) {
-	 // static_assert(std::is_base_of<Component, T>::value, "T != component");
-	 // std::shared_ptr<T> sp(std::make_shared<T>(this, params...));
-	 // _components.erase(sp);
-	 // return sp;
-  //}
+  template <typename T, typename... Targs>
+  std::shared_ptr<T> removeComponent(Targs... params) {
+	  static_assert(std::is_base_of<Component, T>::value, "T != component");
+	  std::shared_ptr<T> sp = T;
+	  _components.erase(sp);
+	  return sp;
+  }
 
   template <typename T>
   const std::vector<std::shared_ptr<T>> get_components() const {

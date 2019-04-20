@@ -28,8 +28,9 @@ void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 }
 
 
-void TrapComponent::placeTrap() {
-	//_parent->removeComponent<TrapComponent>();
+void TrapComponent::removeTrap(Entity *e, Component *p) {
+	//e->removeComponent< e->get_components<TrapComponent>()[0] >();
+	e->removeComponent<TrapComponent>();
 }
 
 void TrapComponent::update(double dt)

@@ -28,6 +28,7 @@ public:
 	void update(double dt) override;
 	void render() override;
 	void placeTrap();
+	void removeTrap(Entity *e, Component *p);
 	//void removeTrap();
 
 	explicit TrapComponent(Entity* p, const sf::Vector2f& size);
