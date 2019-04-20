@@ -10,8 +10,8 @@ using namespace sf;
 //#define GAMEX 1280
 //#define GAMEY 720
 
-#define GAMEX 1000
-#define GAMEY 1000
+#define GAMEX 1920
+#define GAMEY 1080
 
 class MainScene : public Scene {
 
@@ -190,6 +190,6 @@ public:
 MainScene scene;
 
 //int main() {
-//  Engine::Start(1000, 1000, "Deployed", &scene);
+//  Engine::Start(500, 500, "Deployed", &scene);
 //  return 0;
 //}

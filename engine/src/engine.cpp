@@ -237,14 +237,14 @@ void Scene::UnLoad() {
 }
 
 void Scene::Load() {
-	const sf::Vector2u screensize(1280, 720);
+	//const sf::Vector2u screensize(1000, 1000);
 	const sf::Vector2u gamesize(GAMEX, GAMEY);
 	//set View as normal
-	Engine::GetWindow().setSize(screensize);
+	//Engine::GetWindow().setSize(screensize);
 	sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
 	auto v = sf::View(visibleArea);
 	// figure out how to scale and maintain aspect;
-	auto viewport = CalculateViewport(screensize, gamesize);
+	auto viewport = CalculateViewport(Engine::GetWindow().getSize(), gamesize);
 	//Optionally Center it
 	bool centered = true;
 	if (centered) {

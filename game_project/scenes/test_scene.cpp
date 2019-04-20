@@ -26,7 +26,8 @@ shared_ptr<sf::Texture> playerSpritesheet;
 
 
 void TestScene::Load() {
-  float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
+  Scene::Load();
+  float tileSize = GAMEX / 64;
   cout << " Scene 1 Load" << endl;
   ls::loadLevelFile("res/main_level.txt", tileSize);
   
@@ -36,7 +37,7 @@ void TestScene::Load() {
 
 
 
-  auto ho = Engine::getWindowSize().y - (ls::getHeight() * tileSize);
+  auto ho = GAMEY - (ls::getHeight() * tileSize);
   ls::setOffset(Vector2f(0, ho));
 
   // Create player
@@ -127,6 +128,78 @@ void TestScene::UnLoad() {
 
 void TestScene::Update(const double& dt) {
 
+	if (Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+		//  ------------------------------------------------- 
+		Engine::GetWindow().setSize({ 1000, 1000 });
+		//  ------------------------------------------------- 
+	}
+	else if (Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+		//  ------------------------------------------------- 
+		Engine::GetWindow().setSize({ 1280, 720 });
+		//  ------------------------------------------------- 
+	}
+	else if (Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+		//  ------------------------------------------------- 
+		// Change viewport to match window size
+		// Doesn't scale anything! But now we get clipping!
+		Engine::GetWindow().setSize({ 1280, 720 });
+		sf::FloatRect visibleArea(0.f, 0.f, 1280, 720);
+		Engine::GetWindow().setView(sf::View(visibleArea));
+		//  ------------------------------------------------- 
+	}
+	else if (Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+		//  ------------------------------------------------- 
+		// Change viewport to match window size
+		Engine::GetWindow().setSize({ 1280, 720 });
+		sf::FloatRect visibleArea(0.f, 0.f, 1000, 1000);
+		auto v = sf::View(visibleArea);
+
+		// constrain 1000x1000 to 1280x720 & Maintain Aspect. so 720x720;
+		const float widthScale(720.0 / 1280.0);
+		v.setViewport(sf::FloatRect(0, 0, widthScale, 1.0f));
+		Engine::GetWindow().setView(v);
+		//  ------------------------------------------------- 
+	}
+	else if (Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+		//  ------------------------------------------------- 
+		// All together now in a reusable solution.
+		const sf::Vector2u screensize(1280, 720);
+		const sf::Vector2u gamesize(GAMEX, GAMEY);
+		//set View as normal
+		Engine::GetWindow().setSize(screensize);
+		sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
+		auto v = sf::View(visibleArea);
+		// figure out how to scale and maintain aspect;
+		auto viewport = CalculateViewport(screensize, gamesize);
+		//Optionally Center it
+		bool centered = true;
+		if (centered) {
+			viewport.left = (1.0 - viewport.width) * 0.5;
+			viewport.top = (1.0 - viewport.height) * 0.5;
+		}
+		//set!
+		v.setViewport(viewport);
+		Engine::GetWindow().setView(v);
+		//  ------------------------------------------------- 
+	}
+	else if (Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
+		//  ------------------------------------------------- 
+		// Have to Hold 6 Key for this to work magic
+		static float t = 0;
+		t += dt;
+		const sf::Vector2u screensize((sin(t) + 1.3) *0.5 * 1000,
+			(cos(t) + 1.3)* 0.5 * 800);
+
+		const sf::Vector2u gamesize(GAMEX, GAMEY);
+		Engine::GetWindow().setSize(screensize);
+		sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
+		auto v = sf::View(visibleArea);
+		auto viewport = CalculateViewport(screensize, gamesize);
+		viewport.left = (1.0 - viewport.width) * 0.5;
+		viewport.top = (1.0 - viewport.height) * 0.5;
+		v.setViewport(viewport);
+		Engine::GetWindow().setView(v);
+	}
 
 
 //  if (ls::getTileAt(player->getPosition()) == ls::END) {
