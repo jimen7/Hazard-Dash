@@ -25,3 +25,7 @@ void TextComponent::setPosition(sf::Vector2f pos) {
 void TextComponent::setSize(int s) {
 	_text.setCharacterSize(s);
 }
+
+std::string TextComponent::getText() {
+	return _string;
+}

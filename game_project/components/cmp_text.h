@@ -16,6 +16,7 @@ public:
   void SetText(const std::string& str);
   void setPosition(sf::Vector2f pos);
   void setSize(int s);
+  std::string getText();
 
 protected:
   std::shared_ptr<sf::Font> _font;

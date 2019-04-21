@@ -191,17 +191,29 @@ void TestScene::Update(const double& dt) {
 			if (l < 40.0) {
 				t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(15.f, 50.f));
+						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Num1: Mine\nNum2: Spikes");
+					}
 
-
-					if (Mouse::isButtonPressed(Mouse::Left)) {
+					if (Keyboard::isKeyPressed(Keyboard::Num1)) {
 						
 						t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
 						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Mine");
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(15.f, 30.f));
+					}
+
+					if (Keyboard::isKeyPressed(Keyboard::Num2)) {
+
+						t->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
+						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Spikes");
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(15.f, 30.f));
 					}
 				}
 				else {
-					if (Mouse::isButtonPressed(Mouse::Left)) {
+					if (Mouse::isButtonPressed(Mouse::Right)) {
 						//t->removeComponent<TrapComponent>();
 					}
 				}
