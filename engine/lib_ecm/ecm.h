@@ -91,6 +91,7 @@ public:
     return sp;
   }
 
+
   template <typename T, typename... Targs>
   std::shared_ptr<T> removeComponent(Targs... params) {
 	  static_assert(std::is_base_of<Component, T>::value, "T != component");

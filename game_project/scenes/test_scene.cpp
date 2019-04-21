@@ -2,6 +2,7 @@
 #include <SFML/Window/Mouse.hpp>
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_trap.h"
+#include "../components/cmp_text.h"
 #include "../components/cmp_door.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_health.h"
@@ -15,6 +16,11 @@ using namespace sf;
 
 //float tileSize;
 
+
+std::vector<sf::Text> trapDescriptions;
+sf::Text textDes;
+sf::Font font;
+
 static shared_ptr<Entity> player;
 
 int heroes_num = 1;
@@ -26,6 +32,8 @@ shared_ptr<sf::Texture> playerSpritesheet;
 
 
 std::vector<shared_ptr<Entity>> entityTrapsList;
+
+int trapNum = 0;
 
 
 float tileSize;
@@ -97,6 +105,9 @@ void TestScene::Load() {
 		e->setPosition(pos);
 		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
+		e->addComponent<TextComponent>("Empty");
+		e->GetCompatibleComponent<TextComponent>()[0]->setPosition(e->getPosition() - Vector2f(15.f,30.f));
+		e->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 		//e->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
 		//auto s = e->addComponent<ShapeComponent>();
 		//s->setShape<RectangleShape>();
@@ -125,6 +136,19 @@ void TestScene::Load() {
 	  }
   }
 
+  
+  //for (int i = 0; i < entityTrapsList.size(); i++) {
+	 // // Load font-face from res dir
+	 // font.loadFromFile("res/fonts/RobotoMono-Regular.ttf");
+	 // // Set text element to use font
+	 // textDes.setFont(font);
+	 // // set the character size to 24 pixels
+	 // textDes.setCharacterSize(0);
+	 // //Set traps to be initially empty
+	 // textDes.setString("Empty");
+  //}
+
+
 
   cout << " Scene 1 Load Done" << endl;
 
@@ -134,6 +158,7 @@ void TestScene::Load() {
 void TestScene::UnLoad() {
   cout << "Scene 1 Unload" << endl;
   heroes.clear();
+  entityTrapsList.clear();
   player.reset();
   ls::unload();
   Scene::UnLoad();
@@ -142,7 +167,7 @@ void TestScene::UnLoad() {
 void TestScene::Update(const double& dt) {
 
 	indexOfHeroesToRemove.clear();
-		Scene::Update(dt);
+	Scene::Update(dt);
 
 		
 		for (int i = 0; i < heroes.size();i++) {
@@ -157,22 +182,37 @@ void TestScene::Update(const double& dt) {
 
 
 		for (auto t : entityTrapsList) {
-			if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
+			
 
-				const auto dir = Vector2f(sf::Mouse::getPosition()) - t->getPosition();//Gets mouse potition in relation to tile's
-				const auto l = sf::length(dir);
+			const auto dir = Vector2f(sf::Mouse::getPosition()) - t->getPosition();//Gets mouse potition in relation to tile's
+			const auto l = sf::length(dir);
 
 
-				if (l < 40.0) {
+			if (l < 40.0) {
+				t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
+				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
+
+
 					if (Mouse::isButtonPressed(Mouse::Left)) {
+						
 						t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
 						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Mine");
 					}
 				}
-
+				else {
+					if (Mouse::isButtonPressed(Mouse::Left)) {
+						//t->removeComponent<TrapComponent>();
+					}
+				}
+				
 			}
+			else{
+				t->GetCompatibleComponent<TextComponent>()[0]->setSize(0);
+			}
+
+			
 		}
-		//
 
 }
 
