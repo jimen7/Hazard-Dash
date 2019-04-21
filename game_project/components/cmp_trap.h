@@ -29,6 +29,9 @@ public:
 	void render() override;
 	void placeTrap();
 	void removeTrap(Entity *e, Component *p);
+	bool isPlaced();
+	void setBoolPlaced();
+
 	//void removeTrap();
 
 	explicit TrapComponent(Entity* p, const sf::Vector2f& size);

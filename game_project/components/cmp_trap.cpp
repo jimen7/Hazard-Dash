@@ -18,7 +18,7 @@ using namespace Physics;
 //Vector2f tilePos;
 
 
-float tileSize =30.0f;
+float tileSizeTEMP =30.0f;
 
 void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
@@ -30,7 +30,15 @@ void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 
 void TrapComponent::removeTrap(Entity *e, Component *p) {
 	//e->removeComponent< e->get_components<TrapComponent>()[0] >();
-	e->removeComponent<TrapComponent>();
+	//e->removeComponent<TrapComponent>();
+}
+
+void TrapComponent::setBoolPlaced() {
+	_placed = true;
+}
+
+bool TrapComponent::isPlaced() {
+	return _placed;
 }
 
 void TrapComponent::update(double dt)
@@ -49,10 +57,14 @@ void TrapComponent::update(double dt)
 
 	auto c = ls::getTileAt(_parent->getPosition());
 		if (l < 40.0) {
+			
 
 			_trap_colour = _selected_trap_colour;	//Set the print colour tpo be highlighted
+		
 
-			}
+			
+
+		}
 		else {
 			_trap_colour = _original_trap_colour;	//Set the print colout to be the original
 		}
@@ -90,7 +102,7 @@ void TrapComponent::update(double dt)
 
 void TrapComponent::render() {
 	_rs.setFillColor(_trap_colour);
-	_rs.setSize({ tileSize ,tileSize});
+	_rs.setSize({ tileSizeTEMP ,tileSizeTEMP });
 	_rs.setPosition(_parent->getPosition() + Vector2f(-15.0f, -15.0f));
 	Renderer::queue(&_rs);
 }

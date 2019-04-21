@@ -1,4 +1,5 @@
 #include "test_scene.h"
+#include <SFML/Window/Mouse.hpp>
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_trap.h"
 #include "../components/cmp_door.h"
@@ -12,6 +13,8 @@
 using namespace std;
 using namespace sf;
 
+//float tileSize;
+
 static shared_ptr<Entity> player;
 
 int heroes_num = 1;
@@ -22,11 +25,15 @@ std::vector<int> indexOfHeroesToRemove;
 shared_ptr<sf::Texture> playerSpritesheet;
 
 
+std::vector<shared_ptr<Entity>> entityTrapsList;
 
+
+float tileSize;
 
 
 void TestScene::Load() {
-  float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
+ // float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;		//Original
+  tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
   cout << " Scene 1 Load" << endl;
   ls::loadLevelFile("res/main_level.txt", tileSize);
   
@@ -89,13 +96,13 @@ void TestScene::Load() {
 		auto e = makeEntity();
 		e->setPosition(pos);
 		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-		//e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
-		e->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
+		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
+		//e->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
 		//auto s = e->addComponent<ShapeComponent>();
 		//s->setShape<RectangleShape>();
 		//s->getShape().setFillColor(Color::Black);
 
-
+		entityTrapsList.push_back(e);
 	}
   }
 
@@ -134,12 +141,6 @@ void TestScene::UnLoad() {
 
 void TestScene::Update(const double& dt) {
 
-
-
-//  if (ls::getTileAt(player->getPosition()) == ls::END) {
-//    Engine::ChangeScene((Scene*)&level2);
-//  }
-
 	indexOfHeroesToRemove.clear();
 		Scene::Update(dt);
 
@@ -153,6 +154,25 @@ void TestScene::Update(const double& dt) {
 		for (int i = 0; i < indexOfHeroesToRemove.size(); i++) {
 			heroes.erase(heroes.begin()+i);
 		}
+
+
+		for (auto t : entityTrapsList) {
+			if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
+
+				const auto dir = Vector2f(sf::Mouse::getPosition()) - t->getPosition();//Gets mouse potition in relation to tile's
+				const auto l = sf::length(dir);
+
+
+				if (l < 40.0) {
+					if (Mouse::isButtonPressed(Mouse::Left)) {
+						t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
+						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+					}
+				}
+
+			}
+		}
+		//
 
 }
 
