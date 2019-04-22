@@ -29,7 +29,7 @@ void TestScene::Load() {
   Scene::Load();
   float tileSize = GAMEX / 64;
   cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/main_level.txt", tileSize);
+  ls::loadLevelFile("res/tiled/Dungeon_final.csv", tileSize);
   
   // Sorting the door tiles so the player goes through them sequentially
   auto doors = ls::findTiles(ls::DOOR);
