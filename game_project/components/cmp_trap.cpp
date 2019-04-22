@@ -45,15 +45,21 @@ void TrapComponent::update(double dt)
 {
 
 
+	// get the current mouse position in the window
+	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+	const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+	const auto dir = Vector2f(worldPos) - _parent->getPosition();//Gets mouse potition in relation to tile's
+
 	//Vector2f mousePos = Vector2f(sf::Mouse::getPosition(Engine::GetWindow()));
-	Vector2f mousePos = Vector2f(sf::Mouse::getPosition());
+	//Vector2f mousePos = Vector2f(sf::Mouse::getPosition());
 	//tilePos = _parent->getPosition();
 
-	cout << "Mouse Position:(" << mousePos << ")" << endl;
-	cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
+	//cout << "Mouse Position:(" << mousePos << ")" << endl;
+	//cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 
 
-	const auto dir = mousePos - _parent->getPosition();//Gets mouse potition in relation to tile's
+	//const auto dir = mousePos - _parent->getPosition();//Gets mouse potition in relation to tile's
 	const auto l = sf::length(dir);
 
 	//auto s = _parent->get_components<ShapeComponent>();
