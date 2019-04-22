@@ -6,9 +6,10 @@ using namespace std;
 using namespace sf;
 
 shared_ptr<sf::Texture> backroundSpritesheet;
+shared_ptr<sf::Texture> castleSpritesheet;
 
 std::map<LevelSystem::Tile, sf::Color> LevelSystem::_colours{
-	{ WALL, Color::White }, { GROUND, Color::Green }, { TRAP, Color::Yellow }, { DOOR, Color::Red } };
+	{ WALL, Color::White }, { GROUND, Color::Green }, { TRAP, Color::Yellow }, { DOOR, Color::Red }, { START, Color::Blue} };
 
 sf::Color LevelSystem::getColor(LevelSystem::Tile t) {
 	auto it = _colours.find(t);
@@ -51,23 +52,38 @@ void LevelSystem::loadLevelFile(const std::string& path, float tileSize) {
 
 	std::vector<Tile> temp_tiles;
 	int widthCheck = 0;
+	string value = "";
 	for (int i = 0; i < buffer.size(); ++i) {
 		const char c = buffer[i];
 		if (c == '\0') { break; }
 		if (c == '\n') { // newline
+			int number;
+			std::istringstream iss(value);
+			iss >> number;
+			temp_tiles.push_back(number);
+			value = "";
+			++widthCheck;
 			if (w == 0) {  // if we haven't written width yet
-				w = i;       // set width
+				w = widthCheck;       // set width
 			}
-			else if (w != (widthCheck - 1)) {
+			else if (w != (widthCheck)) {
 				throw string("non uniform width:" + to_string(h) + " ") + path;
 			}
 			widthCheck = 0;
+
 			h++; // increment height
 		}
-		else {
-			temp_tiles.push_back((Tile)c);
+		if (c == ',') {
+			int number;
+			std::istringstream iss(value);
+			iss >> number;
+			temp_tiles.push_back(number);
+			value = "";
+			++widthCheck;
 		}
-		++widthCheck;
+		else {
+			value += c;
+		}
 	}
 
 	if (temp_tiles.size() != (w * h)) {
@@ -98,6 +114,12 @@ void LevelSystem::buildSprites(bool optimise) {
 		cerr << "Failed to load backround spritesheet!" << std::endl;
 	}
 
+	castleSpritesheet = make_shared<Texture>();
+	castleSpritesheet->loadFromFile("res/Sprites/castle_tileset_part3.png");
+	if (!castleSpritesheet->loadFromFile("res/Sprites/castle_tileset_part3.png")) {
+		cerr << "Failed to load backround spritesheet!" << std::endl;
+	}
+
 
 
 	vector<tp> tps;
@@ -105,11 +127,21 @@ void LevelSystem::buildSprites(bool optimise) {
 	for (size_t y = 0; y < _height; ++y) {
 		for (size_t x = 0; x < _width; ++x) {
 			Tile t = getTile({ x, y });
-			if (t == EMPTY) {
+			// ENUM Doesn't take -1 it overflows and goes to 255
+			if (t == 255) {
 				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t),true,sf::IntRect(64, 30, 32, 32), backroundSpritesheet, });
 			}
-			else {
-				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t) });
+			if (t == DOOR) {
+				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t),true,sf::IntRect(1, 1, 32, 32), castleSpritesheet, });
+			}
+			if (t == WALL) {
+				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t),true,sf::IntRect(352, 224, 32, 32), castleSpritesheet, });
+			}
+			if (t == GROUND) {
+				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t),true,sf::IntRect(288, 224, 32, 32), castleSpritesheet, });
+			}
+			if (t == TRAP) {
+				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t),true,sf::IntRect(352, 288, 32, 32), castleSpritesheet, });
 			}
 		}
 	}

@@ -64,9 +64,9 @@ void PlayerPhysicsComponent::update(double dt) {
     _grounded = isGrounded();
     if (_grounded) {
       setVelocity(Vector2f(getVelocity().x, 0.f));
-      teleport(Vector2f(pos.x, pos.y - Engine::getWindowSize().y / 720.0f * 2.0f));
-      impulse(Vector2f(0, Engine::getWindowSize().y / 720.0f * (-6.f)));
-	  cout << Engine::getWindowSize().y << endl;
+      teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
+      impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
+	 // cout << Engine::getWindowSize().y << endl;
     }
   }
 
@@ -94,8 +94,8 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p,
     : PhysicsComponent(p, true, size) {
   _doors = doors;
   _size = sv2_to_bv2(size, true);
-  _maxVelocity = Vector2f(Engine::getWindowSize().y / 720.0f * 200.f, Engine::getWindowSize().y / 720.0f * 400.f);
-  _groundspeed = Engine::getWindowSize().y / 720.0f * 30.f;
+  _maxVelocity = Vector2f(GAMEY / 720.0f * 200.f, GAMEY / 720.0f * 400.f);
+  _groundspeed = GAMEY / 720.0f * 30.f;
   _grounded = false;
   _body->SetSleepingAllowed(false);
   _body->SetFixedRotation(true);

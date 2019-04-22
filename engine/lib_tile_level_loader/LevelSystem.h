@@ -17,12 +17,12 @@ public:
   typedef unsigned char Tile;
 
   enum TILES {
-    EMPTY = ' ',
-    START = 's',
-    WALL = 'w',
-    DOOR = 'd',
-	GROUND = 'g',
-	TRAP = 't'
+    EMPTY = -1,
+    START = 0,
+    WALL = 140,
+    DOOR = 32,
+	GROUND = 122,
+	TRAP = 155
   };
 
   static Tile getTile(sf::Vector2ul);

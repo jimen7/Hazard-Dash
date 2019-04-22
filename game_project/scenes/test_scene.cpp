@@ -41,9 +41,12 @@ float tileSize;
 
 void TestScene::Load() {
  // float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;		//Original
-  tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
+  //tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
+  Scene::Load();
+  tileSize = GAMEX / 64;
   cout << " Scene 1 Load" << endl;
   ls::loadLevelFile("res/main_level.txt", tileSize);
+  ls::loadLevelFile("res/tiled/Dungeon_final.csv", tileSize);
   
   // Sorting the door tiles so the player goes through them sequentially
   auto doors = ls::findTiles(ls::DOOR);
@@ -51,7 +54,7 @@ void TestScene::Load() {
 
 
 
-  auto ho = Engine::getWindowSize().y - (ls::getHeight() * tileSize);
+  auto ho = GAMEY - (ls::getHeight() * tileSize);
   ls::setOffset(Vector2f(0, ho));
 
   // Create player
@@ -106,12 +109,14 @@ void TestScene::Load() {
 		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
 		e->addComponent<TextComponent>("Empty");
-		e->GetCompatibleComponent<TextComponent>()[0]->setPosition(e->getPosition() - Vector2f(15.f,30.f));
+		e->GetCompatibleComponent<TextComponent>()[0]->setPosition(e->getPosition() - Vector2f(tileSize/2,tileSize));
 		e->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 		//e->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
 		//auto s = e->addComponent<ShapeComponent>();
 		//s->setShape<RectangleShape>();
 		//s->getShape().setFillColor(Color::Black);
+
+		//sf::Mouse::setPosition(Vector2i(0.f,0.f));
 
 		entityTrapsList.push_back(e);
 	}
@@ -165,6 +170,9 @@ void TestScene::UnLoad() {
 }
 
 void TestScene::Update(const double& dt) {
+//  if (ls::getTileAt(player->getPosition()) == ls::END) {
+//    Engine::ChangeScene((Scene*)&level2);
+//  }
 
 	indexOfHeroesToRemove.clear();
 	Scene::Update(dt);
@@ -183,8 +191,8 @@ void TestScene::Update(const double& dt) {
 
 		for (auto t : entityTrapsList) {
 			
-
 			const auto dir = Vector2f(sf::Mouse::getPosition()) - t->getPosition();//Gets mouse potition in relation to tile's
+			//const auto dir = Vector2f(sf::Mouse::getPosition(Engine::GetWindow())) - t->getPosition();//Gets mouse potition in relation to tile's
 			const auto l = sf::length(dir);
 
 

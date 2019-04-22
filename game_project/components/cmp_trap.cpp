@@ -18,7 +18,7 @@ using namespace Physics;
 //Vector2f tilePos;
 
 
-float tileSizeTEMP =40.0;
+float tileSizeTEMP = GAMEX / 64;
 
 void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
@@ -45,20 +45,23 @@ void TrapComponent::update(double dt)
 {
 
 
+	//Vector2f mousePos = Vector2f(sf::Mouse::getPosition(Engine::GetWindow()));
 	Vector2f mousePos = Vector2f(sf::Mouse::getPosition());
 	//tilePos = _parent->getPosition();
 
+	cout << "Mouse Position:(" << mousePos << ")" << endl;
+	cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 
-	//
+
 	const auto dir = mousePos - _parent->getPosition();//Gets mouse potition in relation to tile's
 	const auto l = sf::length(dir);
 
 	//auto s = _parent->get_components<ShapeComponent>();
 
 	auto c = ls::getTileAt(_parent->getPosition());
-		if (l < 40.0) {
-			
+		if (l <40.0) {
 
+			cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 			_trap_colour = _selected_trap_colour;	//Set the print colour tpo be highlighted
 		
 
@@ -103,7 +106,7 @@ void TrapComponent::update(double dt)
 void TrapComponent::render() {
 	_rs.setFillColor(_trap_colour);
 	_rs.setSize({ tileSizeTEMP ,tileSizeTEMP });
-	_rs.setPosition(_parent->getPosition() + Vector2f(-15.0f, -15.0f));
+	_rs.setPosition(_parent->getPosition() + Vector2f(-tileSizeTEMP/2.0f, -tileSizeTEMP / 2.0f));
 	Renderer::queue(&_rs);
 }
 
