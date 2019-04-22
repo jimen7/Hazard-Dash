@@ -191,8 +191,12 @@ void TestScene::Update(const double& dt) {
 
 		for (auto t : entityTrapsList) {
 			
-			const auto dir = Vector2f(sf::Mouse::getPosition()) - t->getPosition();//Gets mouse potition in relation to tile's
-			//const auto dir = Vector2f(sf::Mouse::getPosition(Engine::GetWindow())) - t->getPosition();//Gets mouse potition in relation to tile's
+			// get the current mouse position in the window
+			const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+			// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+			const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+			const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
+
 			const auto l = sf::length(dir);
 
 
