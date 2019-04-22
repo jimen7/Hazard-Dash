@@ -18,7 +18,7 @@ using namespace Physics;
 //Vector2f tilePos;
 
 
-float tileSizeTEMP =30.0f;
+float tileSizeTEMP =40.0;
 
 void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
@@ -30,7 +30,7 @@ void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 
 void TrapComponent::removeTrap(Entity *e, Component *p) {
 	//e->removeComponent< e->get_components<TrapComponent>()[0] >();
-	//e->removeComponent<TrapComponent>();
+	//e->removeComponent<TrapComponent>(Vector2f(tileSizeTEMP, tileSizeTEMP));
 }
 
 void TrapComponent::setBoolPlaced() {
