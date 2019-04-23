@@ -85,7 +85,7 @@ void TestScene::Load() {
 	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize, tileSize), doors);
+    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize / 2.0f), doors);
 	player->addComponent<HealthComponent>(100.0f);
 	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
@@ -183,7 +183,10 @@ void TestScene::Update(const double& dt) {
 
 	indexOfHeroesToRemove.clear();
 	Scene::Update(dt);
-
+	// get the current mouse position in the window
+	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+	const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
 		
 		for (int i = 0; i < heroes.size();i++) {
 			if (heroes[i]==NULL) {
@@ -197,16 +200,9 @@ void TestScene::Update(const double& dt) {
 
 
 		for (auto t : entityTrapsList) {
-			
-			// get the current mouse position in the window
-			const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
-			// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
-			const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+			// Set to 18 as its half of tilesize (32)
 			const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
-
 			const auto l = sf::length(dir);
-
-
 			if (l < 18.0) {
 				t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
