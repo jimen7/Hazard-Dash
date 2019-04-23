@@ -60,6 +60,7 @@ void TrapComponent::update(double dt)
 
 
 	//const auto dir = mousePos - _parent->getPosition();//Gets mouse potition in relation to tile's
+//	const auto dir = mousePos - _parent->getPosition();//Gets mouse potition in relation to tile's
 	const auto l = sf::length(dir);
 
 	//auto s = _parent->get_components<ShapeComponent>();

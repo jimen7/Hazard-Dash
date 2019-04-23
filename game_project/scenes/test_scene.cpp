@@ -1,5 +1,6 @@
 #include "test_scene.h"
 #include <SFML/Window/Mouse.hpp>
+#include <SFML/Audio.hpp>
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_trap.h"
 #include "../components/cmp_text.h"
@@ -38,8 +39,13 @@ int trapNum = 0;
 
 float tileSize;
 
+sf::Music music;
 
 void TestScene::Load() {
+	if (!music.openFromFile("res/Sounds/Theme.wav")) {
+		throw("Music File does not exist.");
+	}
+	music.setLoop(true);
  // float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;		//Original
   //tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
   Scene::Load();
@@ -84,6 +90,7 @@ void TestScene::Load() {
 	player->addComponent<HealthComponent>(100.0f);
 	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
+	music.play();
   }
 
 
@@ -177,7 +184,10 @@ void TestScene::Update(const double& dt) {
 
 	indexOfHeroesToRemove.clear();
 	Scene::Update(dt);
-
+	// get the current mouse position in the window
+	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+	const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
 		
 		for (int i = 0; i < heroes.size();i++) {
 			if (heroes[i]==NULL) {
@@ -191,17 +201,10 @@ void TestScene::Update(const double& dt) {
 
 
 		for (auto t : entityTrapsList) {
-			
-			// get the current mouse position in the window
-			const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
-			// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
-			const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+			// Set to 18 as its half of tilesize (32)
 			const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
-
 			const auto l = sf::length(dir);
-
-
-			if (l < 40.0) {
+			if (l < 18.0) {
 				t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
