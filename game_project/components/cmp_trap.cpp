@@ -22,7 +22,7 @@ float tileSizeTEMP = GAMEX / 64;
 
 void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
-	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
+	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
 	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);
 	e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
 }

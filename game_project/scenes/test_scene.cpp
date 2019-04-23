@@ -79,7 +79,8 @@ void TestScene::Load() {
 	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)), doors);
+   // player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)), doors);
+	player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize /2.0f , tileSize * (3.0f / 4.0f)), doors);
 	player->addComponent<HealthComponent>(100.0f);
 	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
