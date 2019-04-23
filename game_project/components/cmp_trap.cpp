@@ -129,7 +129,7 @@ void SpikeTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 
 SpikeTrapComponent::SpikeTrapComponent(Entity* p, const sf::Vector2f& size) : TrapComponent(p,size) {
 	_damage = 10;
-	_original_trap_colour = sf::Color::Black;
+	_original_trap_colour = sf::Color::Blue;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
 	//p->addComponent<TrapComponent>(Vector2f(tileSizeTEMP, tileSizeTEMP));
@@ -146,7 +146,7 @@ void MineTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 
 MineTrapComponent::MineTrapComponent(Entity* p, const sf::Vector2f& size) : TrapComponent(p, size) {
 	_damage = 50;
-	_trap_colour = sf::Color::Blue;
+	_original_trap_colour = sf::Color::Yellow;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
 	//p->addComponent<TrapComponent>(Vector2f(tileSizeTEMP, tileSizeTEMP));
