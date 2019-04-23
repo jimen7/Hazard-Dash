@@ -1,5 +1,6 @@
 #include "test_scene.h"
 #include <SFML/Window/Mouse.hpp>
+#include <SFML/Audio.hpp>
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_trap.h"
 #include "../components/cmp_text.h"
@@ -38,8 +39,13 @@ int trapNum = 0;
 
 float tileSize;
 
+sf::Music music;
 
 void TestScene::Load() {
+	if (!music.openFromFile("res/Sounds/Theme.wav")) {
+		throw("Music File does not exist.");
+	}
+	music.setLoop(true);
  // float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;		//Original
   //tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
   Scene::Load();
@@ -79,10 +85,11 @@ void TestScene::Load() {
 	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize * (3.0f/4.0f)), doors);
+    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize, tileSize), doors);
 	player->addComponent<HealthComponent>(100.0f);
 	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
+	music.play();
   }
 
 
@@ -200,7 +207,7 @@ void TestScene::Update(const double& dt) {
 			const auto l = sf::length(dir);
 
 
-			if (l < 40.0) {
+			if (l < 18.0) {
 				t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {

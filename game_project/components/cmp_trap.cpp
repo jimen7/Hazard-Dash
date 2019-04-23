@@ -49,10 +49,6 @@ void TrapComponent::update(double dt)
 	Vector2f mousePos = Vector2f(sf::Mouse::getPosition());
 	//tilePos = _parent->getPosition();
 
-	cout << "Mouse Position:(" << mousePos << ")" << endl;
-	cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
-
-
 	const auto dir = mousePos - _parent->getPosition();//Gets mouse potition in relation to tile's
 	const auto l = sf::length(dir);
 
@@ -60,8 +56,6 @@ void TrapComponent::update(double dt)
 
 	auto c = ls::getTileAt(_parent->getPosition());
 		if (l <40.0) {
-
-			cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 			_trap_colour = _selected_trap_colour;	//Set the print colour tpo be highlighted
 		
 
