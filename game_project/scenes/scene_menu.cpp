@@ -50,7 +50,19 @@ void MenuScene::Update(const double& dt) {
   }
 
   if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-	  cout << "Button Pressed at " << endl;
+	  // get the current mouse position in the window
+	  const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+	  // convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+	  const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+	  if (worldPos.x > 676.0f && worldPos.x < 1272.0f && worldPos.y > 278.0f && worldPos.y < 359.0f) {
+		  Engine::ChangeScene(&testLevel);
+	  }
+	  else if (worldPos.x > 747.0f && worldPos.x < 1174.0f && worldPos.y > 466.0f && worldPos.y < 562.0f) {
+		  //Engine::ChangeScene(&testLevel);
+	  }
+	  else if (worldPos.x > 826.0f && worldPos.x < 1056.0f && worldPos.y > 670.0f && worldPos.y < 759.0f) {
+		  Engine::GetWindow().close();
+	  }
   }
 
   Scene::Update(dt);
