@@ -116,7 +116,7 @@ void TestScene::Load() {
 		pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
 		auto e = makeEntity();
 		e->setPosition(pos);
-		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+		//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
 		e->addComponent<TextComponent>("Empty");
 		e->GetCompatibleComponent<TextComponent>()[0]->setPosition(e->getPosition() - Vector2f(tileSize/DIVIDER,tileSize));
@@ -216,6 +216,7 @@ void TestScene::Update(const double& dt) {
 
 					if (Keyboard::isKeyPressed(Keyboard::Num1)) {
 						
+						t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 						t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
 						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Mine");
@@ -224,6 +225,7 @@ void TestScene::Update(const double& dt) {
 
 					if (Keyboard::isKeyPressed(Keyboard::Num2)) {
 
+						t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 						t->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
 						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Spikes");

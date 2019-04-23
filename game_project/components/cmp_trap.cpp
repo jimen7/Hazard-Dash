@@ -68,31 +68,37 @@ void TrapComponent::update(double dt)
 			_trap_colour = _original_trap_colour;	//Set the print colout to be the original
 	}
 
-	if (_timer >= 0) {
-		_timer -= dt;
-	}
-	else{
-		auto collidingObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();//Gets any colliding objects with the trap, improved from checking against every hero
 
-		for (auto k : collidingObjects) {
-			Entity* e1 = (Entity*)k->GetFixtureA()->GetUserData();
-			Entity* e2 = (Entity*)k->GetFixtureB()->GetUserData();
-			Entity* other;
-			if (e2 == _parent) {
-				//e1 is the thing,e2 is us
-				other = e1;
+
+	if (_parent->GetCompatibleComponent<PhysicsComponent>().size() != 0) {		//Check if player has physics comp[onents. Physics Components are only added if it is an advanced trap, as player can walk through empty traps.
+		if (_timer >= 0) {
+			_timer -= dt;
+		}
+		else {
+			auto collidingObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();//Gets any colliding objects with the trap, improved from checking against every hero
+
+			for (auto k : collidingObjects) {
+				Entity* e1 = (Entity*)k->GetFixtureA()->GetUserData();
+				Entity* e2 = (Entity*)k->GetFixtureB()->GetUserData();
+				Entity* other;
+				if (e2 == _parent) {
+					//e1 is the thing,e2 is us
+					other = e1;
+				}
+				else {
+					//e2 is the thing,e1 is us
+					other = e2;
+				}
+				const auto dir = other->getPosition() - _parent->getPosition();
+				TrapPlayer(other, dir);
+				auto a = 1;
+				_timer = 0.5;
+				//cout << _timer << endl;
 			}
-			else {
-				//e2 is the thing,e1 is us
-				other = e2;
-			}
-			const auto dir = other->getPosition() - _parent->getPosition();
-			TrapPlayer(other, dir);
-			auto a = 1;
-			_timer = 0.5;
-			//cout << _timer << endl;
 		}
 	}
+
+	
 
 
 
@@ -126,6 +132,7 @@ SpikeTrapComponent::SpikeTrapComponent(Entity* p, const sf::Vector2f& size) : Tr
 	_original_trap_colour = sf::Color::Black;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
+	//p->addComponent<TrapComponent>(Vector2f(tileSizeTEMP, tileSizeTEMP));
 }
 
 
@@ -142,4 +149,5 @@ MineTrapComponent::MineTrapComponent(Entity* p, const sf::Vector2f& size) : Trap
 	_trap_colour = sf::Color::Blue;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
+	//p->addComponent<TrapComponent>(Vector2f(tileSizeTEMP, tileSizeTEMP));
 }
