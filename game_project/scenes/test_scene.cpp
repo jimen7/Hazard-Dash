@@ -76,8 +76,8 @@ void TestScene::Load() {
 
 	playerSpritesheet = make_shared<sf::Texture>();
 
-	playerSpritesheet->loadFromFile("res/Sprites/Esquire4.png");
-	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire4.png")) {
+	playerSpritesheet->loadFromFile("res/Sprites/Esquire3.png");
+	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {
 		cerr << "Failed to load spritesheet!" << std::endl;
 	}
 	auto s = player->addComponent<SpriteComponent>();

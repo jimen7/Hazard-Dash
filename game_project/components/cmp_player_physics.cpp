@@ -45,26 +45,15 @@ void PlayerPhysicsComponent::update(double dt) {
 	  cout << "DOOR" << endl;
   }
 
-  if (Joystick::isConnected(0)) {
+  if (Joystick::isConnected(0)) {	//IF CONTROLLER IS CONNECTED USE IT
 	  
 
-	  sf::Joystick::update();		//NEED THIS TO KEEP INPUT OF JOYSTIC UP TO DATE
+	//  sf::Joystick::update();		//NEED THIS TO KEEP INPUT OF JOYSTIC UP TO DATE
 
-	  float xxx = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
-	  float yyy = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
+	  float xxx = sf::Joystick::getAxisPosition(0, sf::Joystick::X);	//Gets the x axis value of the Left Pad of the controller
+	  //float yyy = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);	//Gets the y axis value of the Left Pad of the controller
 
 	  cout << xxx << endl;
-	  //if (xxx !=0.f) {
-		 // // Moving Either Left or Right
-		 // if (xxx >0) {
-			//  if (getVelocity().x < _maxVelocity.x)
-			//	  impulse({ (float)(dt * _groundspeed*xxx), 0 });
-		 // }
-		 // else if (xxx <0) {
-			//  if (getVelocity().x > -_maxVelocity.x)
-			//	  impulse({ -(float)(dt * _groundspeed*(-xxx)), 0 });
-		 // }
-	  //}
 
 	  if (xxx > 50.f|| xxx<-50.f) {	//Controller inputs go grom -100 to 100, and since sticks are usually sticky we need to make sure players apply enough force.
 		  // Moving Either Left or Right
@@ -92,7 +81,7 @@ void PlayerPhysicsComponent::update(double dt) {
 		  }
 	  }
   }
-  else{
+  else{	//OTHERWISE USE KEYBOARD
 	  if (Keyboard::isKeyPressed(Keyboard::Left) ||
 		  Keyboard::isKeyPressed(Keyboard::Right)) {
 		  // Moving Either Left or Right
