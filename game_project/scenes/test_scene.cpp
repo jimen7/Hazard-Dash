@@ -75,17 +75,20 @@ void TestScene::Load() {
 
 	playerSpritesheet = make_shared<sf::Texture>();
 
-	playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png");
-	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png")) {
+	playerSpritesheet->loadFromFile("res/Sprites/Esquire3.png");
+	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {
 		cerr << "Failed to load spritesheet!" << std::endl;
 	}
-
 	auto s = player->addComponent<SpriteComponent>();
 	s->setTexure(playerSpritesheet);
-	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+	s->setTextureRect(sf::IntRect(0, 0, 16, 16));
 
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize / 2.0f, tileSize / 2.0f), doors);
+    player->addComponent<PlayerPhysicsComponent>(Vector2f(float(tileSize) / 2.0f ,float(tileSize) * (3.0f/4.0f)), doors);	//HOW IT WAS ORIGINALLY IMPLEMENTED
+	//player->GetCompatibleComponent<PhysicsComponent>()[0]->
+	//player->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize));
+	//player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize , tileSize *2), doors);
 	player->addComponent<HealthComponent>(100.0f);
 	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
@@ -103,20 +106,20 @@ void TestScene::Load() {
 	walls.insert(walls.end(), ground.begin(), ground.end());
     for (auto w : walls) {
       auto pos = ls::getTilePosition(w);
-      pos += Vector2f(tileSize/2 , tileSize /2); //offset to center
+      pos += Vector2f(tileSize/ DIVIDER, tileSize / DIVIDER); //offset to center
       auto e = makeEntity();
       e->setPosition(pos);
       e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
     }
 	for (auto t : traps) {
 		auto pos = ls::getTilePosition(t);
-		pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
+		pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
 		auto e = makeEntity();
 		e->setPosition(pos);
 		e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
 		e->addComponent<TextComponent>("Empty");
-		e->GetCompatibleComponent<TextComponent>()[0]->setPosition(e->getPosition() - Vector2f(tileSize/2,tileSize));
+		e->GetCompatibleComponent<TextComponent>()[0]->setPosition(e->getPosition() - Vector2f(tileSize/DIVIDER,tileSize));
 		e->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 		//e->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
 		//auto s = e->addComponent<ShapeComponent>();
@@ -135,7 +138,7 @@ void TestScene::Load() {
 	  ls::sortTiles(doors);
 	  for (int i = 0; i < doors.size(); i++) {
 		  auto pos = ls::getTilePosition(doors[i]);
-		  pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
+		  pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
 		  auto e = makeEntity();
 		  e->setPosition(pos);
 		  if (i % 2 == 0 && i != doors.size() - 1)
@@ -180,7 +183,7 @@ void TestScene::Update(const double& dt) {
 //  if (ls::getTileAt(player->getPosition()) == ls::END) {
 //    Engine::ChangeScene((Scene*)&level2);
 //  }
-
+	//player->GetCompatibleComponent<PhysicsComponent>()[0]->setRestitution(1.f);
 	indexOfHeroesToRemove.clear();
 	Scene::Update(dt);
 	// get the current mouse position in the window
@@ -203,11 +206,11 @@ void TestScene::Update(const double& dt) {
 			// Set to 18 as its half of tilesize (32)
 			const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
 			const auto l = sf::length(dir);
-			if (l < 18.0) {
+			if (l < 25.0) {
 				t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(15.f, 50.f));
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
 						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Num1: Mine\nNum2: Spikes");
 					}
 
@@ -216,7 +219,7 @@ void TestScene::Update(const double& dt) {
 						t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
 						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Mine");
-						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(15.f, 30.f));
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
 					}
 
 					if (Keyboard::isKeyPressed(Keyboard::Num2)) {
@@ -224,7 +227,7 @@ void TestScene::Update(const double& dt) {
 						t->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
 						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Spikes");
-						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(15.f, 30.f));
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
 					}
 				}
 				else {
@@ -236,6 +239,10 @@ void TestScene::Update(const double& dt) {
 			}
 			else{
 				t->GetCompatibleComponent<TextComponent>()[0]->setSize(0);
+				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Empty");
+				}
+				
 			}
 
 			

@@ -8,6 +8,7 @@
 
 #define GAMEX 1920
 #define GAMEY 1080
+#define DIVIDER 4.0f
 
 class Scene {
 public:

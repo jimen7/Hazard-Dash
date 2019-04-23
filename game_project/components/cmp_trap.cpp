@@ -22,7 +22,7 @@ float tileSizeTEMP = GAMEX / 64;
 
 void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
-	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
+	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
 	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);
 	e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
 }
@@ -45,32 +45,34 @@ void TrapComponent::update(double dt)
 {
 
 
-	//Vector2f mousePos = Vector2f(sf::Mouse::getPosition(Engine::GetWindow()));
-	Vector2f mousePos = Vector2f(sf::Mouse::getPosition());
-	//tilePos = _parent->getPosition();
-
-	const auto dir = mousePos - _parent->getPosition();//Gets mouse potition in relation to tile's
+	// get the current mouse position in the window
+	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+	const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+	const auto dir = Vector2f(worldPos) - _parent->getPosition();//Gets mouse potition in relation to tile's
 	const auto l = sf::length(dir);
 
-	//auto s = _parent->get_components<ShapeComponent>();
+	//cout << "Mouse Position:(" << mousePos << ")" << endl;
+	//cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 
-	auto c = ls::getTileAt(_parent->getPosition());
-		if (l <40.0) {
+		//if (ls::getTileAt(worldPos)==ls::TRAP && ls::getTileAt(_parent->getPosition()) == ls::TRAP) {		//Tried to see if it was more efficient, it wasn't
+	if (l<25.0) {
+			//cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 			_trap_colour = _selected_trap_colour;	//Set the print colour tpo be highlighted
 		
 
 			
 
-		}
-		else {
+	}
+	else {
 			_trap_colour = _original_trap_colour;	//Set the print colout to be the original
-		}
+	}
 
 	if (_timer >= 0) {
 		_timer -= dt;
 	}
 	else{
-		auto collidingObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();
+		auto collidingObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();//Gets any colliding objects with the trap, improved from checking against every hero
 
 		for (auto k : collidingObjects) {
 			Entity* e1 = (Entity*)k->GetFixtureA()->GetUserData();
@@ -100,7 +102,7 @@ void TrapComponent::update(double dt)
 void TrapComponent::render() {
 	_rs.setFillColor(_trap_colour);
 	_rs.setSize({ tileSizeTEMP ,tileSizeTEMP });
-	_rs.setPosition(_parent->getPosition() + Vector2f(-tileSizeTEMP/2.0f, -tileSizeTEMP / 2.0f));
+	_rs.setPosition(_parent->getPosition() + Vector2f(-tileSizeTEMP/ DIVIDER, -tileSizeTEMP / DIVIDER));
 	Renderer::queue(&_rs);
 }
 
