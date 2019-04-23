@@ -45,31 +45,85 @@ void PlayerPhysicsComponent::update(double dt) {
 	  cout << "DOOR" << endl;
   }
 
-  if (Keyboard::isKeyPressed(Keyboard::Left) ||
-      Keyboard::isKeyPressed(Keyboard::Right)) {
-    // Moving Either Left or Right
-    if (Keyboard::isKeyPressed(Keyboard::Right)) {
-      if (getVelocity().x < _maxVelocity.x)
-        impulse({(float)(dt * _groundspeed), 0});
-    } else {
-      if (getVelocity().x > -_maxVelocity.x)
-        impulse({-(float)(dt * _groundspeed), 0});
-    }
-  } else {
-    // Dampen X axis movement
-    dampen({0.9f, 1.0f});
+  if (Joystick::isConnected(0)) {
+	  
+
+	  sf::Joystick::update();		//NEED THIS TO KEEP INPUT OF JOYSTIC UP TO DATE
+
+	  float xxx = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
+	  float yyy = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
+
+	  cout << xxx << endl;
+	  //if (xxx !=0.f) {
+		 // // Moving Either Left or Right
+		 // if (xxx >0) {
+			//  if (getVelocity().x < _maxVelocity.x)
+			//	  impulse({ (float)(dt * _groundspeed*xxx), 0 });
+		 // }
+		 // else if (xxx <0) {
+			//  if (getVelocity().x > -_maxVelocity.x)
+			//	  impulse({ -(float)(dt * _groundspeed*(-xxx)), 0 });
+		 // }
+	  //}
+
+	  if (xxx > 50.f|| xxx<-50.f) {	//Controller inputs go grom -100 to 100, and since sticks are usually sticky we need to make sure players apply enough force.
+		  // Moving Either Left or Right
+		  if (xxx > 0) {
+			  if (getVelocity().x < _maxVelocity.x)
+				  impulse({ (float)(dt * _groundspeed), 0 });
+		  }
+		  else if (xxx < 0) {
+			  if (getVelocity().x > -_maxVelocity.x)
+				  impulse({ -(float)(dt * _groundspeed), 0 });
+		  }
+	  }
+	  else {
+		  // Dampen X axis movement
+		  dampen({ 0.9f, 1.0f });
+	  }
+	  // Handle Jump
+	  if (Joystick::isButtonPressed(0,0)) {
+		  _grounded = isGrounded();
+		  if (_grounded) {
+			  setVelocity(Vector2f(getVelocity().x, 0.f));
+			  teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
+			  impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
+			  // cout << Engine::getWindowSize().y << endl;
+		  }
+	  }
+  }
+  else{
+	  if (Keyboard::isKeyPressed(Keyboard::Left) ||
+		  Keyboard::isKeyPressed(Keyboard::Right)) {
+		  // Moving Either Left or Right
+		  if (Keyboard::isKeyPressed(Keyboard::Right)) {
+			  if (getVelocity().x < _maxVelocity.x)
+				  impulse({ (float)(dt * _groundspeed), 0 });
+		  }
+		  else {
+			  if (getVelocity().x > -_maxVelocity.x)
+				  impulse({ -(float)(dt * _groundspeed), 0 });
+		  }
+	  }
+	  else {
+		  // Dampen X axis movement
+		  dampen({ 0.9f, 1.0f });
+	  }
+	  // Handle Jump
+	  if (Keyboard::isKeyPressed(Keyboard::Up)) {
+		  _grounded = isGrounded();
+		  if (_grounded) {
+			  setVelocity(Vector2f(getVelocity().x, 0.f));
+			  teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
+			  impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
+			  // cout << Engine::getWindowSize().y << endl;
+		  }
+	  }
   }
 
-  // Handle Jump
-  if (Keyboard::isKeyPressed(Keyboard::Up)) {
-    _grounded = isGrounded();
-    if (_grounded) {
-      setVelocity(Vector2f(getVelocity().x, 0.f));
-      teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
-      impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
-	 // cout << Engine::getWindowSize().y << endl;
-    }
-  }
+  
+
+
 
   //Are we in air?
   if (!_grounded) {

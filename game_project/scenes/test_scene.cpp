@@ -1,5 +1,6 @@
 #include "test_scene.h"
 #include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/Joystick.hpp>
 #include <SFML/Audio.hpp>
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_trap.h"
@@ -75,8 +76,8 @@ void TestScene::Load() {
 
 	playerSpritesheet = make_shared<sf::Texture>();
 
-	playerSpritesheet->loadFromFile("res/Sprites/Esquire3.png");
-	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {
+	playerSpritesheet->loadFromFile("res/Sprites/Esquire4.png");
+	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire4.png")) {
 		cerr << "Failed to load spritesheet!" << std::endl;
 	}
 	auto s = player->addComponent<SpriteComponent>();
@@ -183,6 +184,8 @@ void TestScene::Update(const double& dt) {
 //  if (ls::getTileAt(player->getPosition()) == ls::END) {
 //    Engine::ChangeScene((Scene*)&level2);
 //  }
+
+
 	//player->GetCompatibleComponent<PhysicsComponent>()[0]->setRestitution(1.f);
 	indexOfHeroesToRemove.clear();
 	Scene::Update(dt);
@@ -249,6 +252,8 @@ void TestScene::Update(const double& dt) {
 
 			
 		}
+
+
 
 }
 
