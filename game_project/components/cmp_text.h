@@ -16,6 +16,7 @@ public:
   void SetText(const std::string& str);
   void setPosition(sf::Vector2f pos);
   void setSize(int s);
+  void setColour(sf::Color color);
   std::string getText();
 
 protected:

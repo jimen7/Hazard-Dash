@@ -29,3 +29,7 @@ void TextComponent::setSize(int s) {
 std::string TextComponent::getText() {
 	return _string;
 }
+
+void TextComponent::setColour(sf::Color color) {
+	_text.setColor(color);
+}
