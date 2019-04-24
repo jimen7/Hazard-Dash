@@ -9,6 +9,9 @@ protected:
   std::vector <sf::Vector2ul> _doors;
   bool _grounded;
   float _groundspeed;
+  bool _AIMode = false;
+  bool _goingLeft = true;
+  bool _jumping = false;
 
 
   bool isGrounded() const;
@@ -22,4 +25,7 @@ public:
 
   PlayerPhysicsComponent() = delete;
 
+  void setAIMode(bool AIMode) { _AIMode = AIMode; }
+  void setGoingLeft(bool goingLeft) { _goingLeft = goingLeft; }
+  void setJumping(bool jumping) { _jumping = jumping; }
 };

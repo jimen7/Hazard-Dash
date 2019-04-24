@@ -18,11 +18,17 @@ public:
 
   enum TILES {
     EMPTY = -1,
-    START = 0,
+    START = 10,
     WALL = 140,
     DOOR = 32,
 	GROUND = 122,
-	TRAP = 155
+	TRAP = 155,
+	RIGHT = 1,
+	LEFT = 0,
+	UPLEFT = 2,
+	UPRIGHT = 3,
+	SPECIAL = 4,
+	TELEPORT = 38
   };
 
   static Tile getTile(sf::Vector2ul);
