@@ -40,34 +40,53 @@ void PlayerPhysicsComponent::update(double dt) {
     teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
   }
 
-  if (ls::getTileAt(pos) == ls::DOOR) {
-	  cout << "DOOR" << endl;
-  }
+  if (!_AIMode) {
+	  if (Keyboard::isKeyPressed(Keyboard::Left) ||
+		  Keyboard::isKeyPressed(Keyboard::Right)) {
+		  // Moving Either Left or Right
+		  if (Keyboard::isKeyPressed(Keyboard::Right)) {
+			  if (getVelocity().x < _maxVelocity.x)
+				  impulse({ (float)(dt * _groundspeed), 0 });
+		  }
+		  else {
+			  if (getVelocity().x > -_maxVelocity.x)
+				  impulse({ -(float)(dt * _groundspeed), 0 });
+		  }
+	  }
+	  else {
+		  // Dampen X axis movement
+		  dampen({ 0.9f, 1.0f });
+	  }
 
-  if (Keyboard::isKeyPressed(Keyboard::Left) ||
-      Keyboard::isKeyPressed(Keyboard::Right)) {
-    // Moving Either Left or Right
-    if (Keyboard::isKeyPressed(Keyboard::Right)) {
-      if (getVelocity().x < _maxVelocity.x)
-        impulse({(float)(dt * _groundspeed), 0});
-    } else {
-      if (getVelocity().x > -_maxVelocity.x)
-        impulse({-(float)(dt * _groundspeed), 0});
-    }
-  } else {
-    // Dampen X axis movement
-    dampen({0.9f, 1.0f});
+	  // Handle Jump
+	  if (Keyboard::isKeyPressed(Keyboard::Up)) {
+		  _grounded = isGrounded();
+		  if (_grounded) {
+			  setVelocity(Vector2f(getVelocity().x, 0.f));
+			  teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
+			  impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
+			  // cout << Engine::getWindowSize().y << endl;
+		  }
+	  }
   }
+  else {
+	  if (!_goingLeft) {
+		  if (getVelocity().x < _maxVelocity.x)
+			  impulse({ (float)(dt * _groundspeed), 0 });
+	  }
+	  else {
+		  if (getVelocity().x > -_maxVelocity.x)
+			  impulse({ -(float)(dt * _groundspeed), 0 });
+	  }
 
-  // Handle Jump
-  if (Keyboard::isKeyPressed(Keyboard::Up)) {
-    _grounded = isGrounded();
-    if (_grounded) {
-      setVelocity(Vector2f(getVelocity().x, 0.f));
-      teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
-      impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
-	 // cout << Engine::getWindowSize().y << endl;
-    }
+	  if (_jumping) {
+		  _grounded = isGrounded();
+		  if (_grounded) {
+			  setVelocity(Vector2f(getVelocity().x, 0.f));
+			  teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
+			  impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
+		  }
+	  }
   }
 
   //Are we in air?

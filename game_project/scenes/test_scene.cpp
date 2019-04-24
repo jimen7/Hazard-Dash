@@ -7,6 +7,7 @@
 #include "../components/cmp_door.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_health.h"
+#include "../components/cmp_AI.h"
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
@@ -67,7 +68,7 @@ void TestScene::Load() {
 
   for (int i = 0; i < heroes_num; i++) {
     player = makeEntity();
-    player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+    player->setPosition(ls::getTilePosition(ls::findTiles(ls::DOOR)[9]));
     //auto s = player->addComponent<ShapeComponent>();
     //s->setShape<sf::RectangleShape>(Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
     //s->getShape().setFillColor(Color::Magenta);
@@ -90,6 +91,7 @@ void TestScene::Load() {
 	//player->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize));
 	//player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize , tileSize *2), doors);
 	player->addComponent<HealthComponent>(100.0f);
+	player->addComponent<AIComponent>();
 	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
 	music.play();
@@ -141,7 +143,7 @@ void TestScene::Load() {
 		  pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
 		  auto e = makeEntity();
 		  e->setPosition(pos);
-		  if (i % 2 == 0 && i != doors.size() - 1)
+		  if (i % 2 == 1 && i != doors.size() - 1)
  			  e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[i + 1]));
 		  else
 			  e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize));

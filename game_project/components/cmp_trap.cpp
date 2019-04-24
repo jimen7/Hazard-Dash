@@ -109,7 +109,6 @@ void TrapComponent::render() {
 
 TrapComponent::TrapComponent(Entity* p, const sf::Vector2f& size) : Component(p) {
 	_damage = 0;
-
 	//_pushForce = 1.03f;
 	_pushForce = 0.03f;
 
