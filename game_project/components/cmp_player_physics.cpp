@@ -2,11 +2,13 @@
 #include "system_physics.h"
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Joystick.hpp>
 #include <engine.h>
 
 using namespace std;
 using namespace sf;
 using namespace Physics;
+
 
 
 bool PlayerPhysicsComponent::isGrounded() const {
@@ -41,31 +43,92 @@ void PlayerPhysicsComponent::update(double dt) {
   }
 
   if (!_AIMode) {
-	  if (Keyboard::isKeyPressed(Keyboard::Left) ||
-		  Keyboard::isKeyPressed(Keyboard::Right)) {
-		  // Moving Either Left or Right
-		  if (Keyboard::isKeyPressed(Keyboard::Right)) {
-			  if (getVelocity().x < _maxVelocity.x)
-				  impulse({ (float)(dt * _groundspeed), 0 });
+	  if (Joystick::isConnected(0)) {	//IF CONTROLLER IS CONNECTED USE IT
+
+		  /*Joystick GLOSSARY:
+
+		  X axis: left pad x axis
+		  Y Axis: left pad Y acis
+		  Z Axis: RT and LT values
+		  R AXIS: NO R AXIS ON XBOX CONTROLLER
+		  U Axis: Right pad X axis
+		  V Axis: Right Pad Y axis
+		  POVX Axis: Directional Pad X axis		//Dogy as whn moving Y axis it registers weird Numbers
+		  POVY AXIS:  Directional Pad Y axis	//Dodgy as when moving X axis it registers weird numbers
+		  Button 0: A
+		  Button 1: B
+		  Button 2: X
+		  Button 3: Y
+		  Button 4: LB
+		  Button 5: RB
+		  Button 6: SELECT
+		  Button 7: START
+		  Button 8: Left Pad Button
+		  Button 9: Right Pad Button
+		  */
+
+
+
+	//  sf::Joystick::update();		//NEED THIS TO KEEP INPUT OF JOYSTIC UP TO DATE
+
+		  float xxx = sf::Joystick::getAxisPosition(0, sf::Joystick::X);	//Gets the x axis value of the Left Pad of the controller
+		  //float yyy = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);	//Gets the y axis value of the Left Pad of the controller
+		  //cout << yyy << endl;
+
+		  if (xxx > 50.f || xxx < -50.f) {	//Controller inputs go grom -100 to 100, and since sticks are usually sticky we need to make sure players apply enough force.
+			  // Moving Either Left or Right
+			  if (xxx > 0) {
+				  if (getVelocity().x < _maxVelocity.x)
+					  impulse({ (float)(dt * _groundspeed), 0 });
+			  }
+			  else if (xxx < 0) {
+				  if (getVelocity().x > -_maxVelocity.x)
+					  impulse({ -(float)(dt * _groundspeed), 0 });
+			  }
 		  }
 		  else {
-			  if (getVelocity().x > -_maxVelocity.x)
-				  impulse({ -(float)(dt * _groundspeed), 0 });
+			  // Dampen X axis movement
+			  dampen({ 0.9f, 1.0f });
+		  }
+		  // Handle Jump
+		  if (Joystick::isButtonPressed(0, Engine::getKeysss()["Jump"].JoysticButtonNum)) {
+			  // Handle Jump
+			  _grounded = isGrounded();
+			  if (_grounded) {
+				  setVelocity(Vector2f(getVelocity().x, 0.f));
+				  teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
+				  impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
+				  // cout << Engine::getWindowSize().y << endl;
+			  }
+
 		  }
 	  }
-	  else {
-		  // Dampen X axis movement
-		  dampen({ 0.9f, 1.0f });
-	  }
-
-	  // Handle Jump
-	  if (Keyboard::isKeyPressed(Keyboard::Up)) {
-		  _grounded = isGrounded();
-		  if (_grounded) {
-			  setVelocity(Vector2f(getVelocity().x, 0.f));
-			  teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
-			  impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
-			  // cout << Engine::getWindowSize().y << endl;
+	  else {	//OTHERWISE USE KEYBOARD
+		  if (Keyboard::isKeyPressed(Keyboard::Left) ||
+			  Keyboard::isKeyPressed(Keyboard::Right)) {
+			  // Moving Either Left or Right
+			  if (Keyboard::isKeyPressed(Keyboard::Right)) {
+				  if (getVelocity().x < _maxVelocity.x)
+					  impulse({ (float)(dt * _groundspeed), 0 });
+			  }
+			  else {
+				  if (getVelocity().x > -_maxVelocity.x)
+					  impulse({ -(float)(dt * _groundspeed), 0 });
+			  }
+		  }
+		  else {
+			  // Dampen X axis movement
+			  dampen({ 0.9f, 1.0f });
+		  }
+		  // Handle Jump
+		  if (Keyboard::isKeyPressed(Keyboard::Up)) {
+			  _grounded = isGrounded();
+			  if (_grounded) {
+				  setVelocity(Vector2f(getVelocity().x, 0.f));
+				  teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
+				  impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
+				  // cout << Engine::getWindowSize().y << endl;
+			  }
 		  }
 	  }
   }
@@ -85,28 +148,38 @@ void PlayerPhysicsComponent::update(double dt) {
 			  setVelocity(Vector2f(getVelocity().x, 0.f));
 			  teleport(Vector2f(pos.x, pos.y - GAMEY / 720.0f * 2.0f));
 			  impulse(Vector2f(0, GAMEY / 720.0f * (-6.f)));
+			  // cout << Engine::getWindowSize().y << endl;
 		  }
 	  }
   }
 
-  //Are we in air?
-  if (!_grounded) {
-    // Check to see if we have landed yet
-    _grounded = isGrounded();
-    // disable friction while jumping
-    setFriction(0.f);
-  } else {
-    setFriction(0.1f);
-  }
+	
 
-  // Clamp velocity.
-  auto v = getVelocity();
-  v.x = copysign(min(abs(v.x), _maxVelocity.x), v.x);
-  v.y = copysign(min(abs(v.y), _maxVelocity.y), v.y);
-  setVelocity(v);
 
-  PhysicsComponent::update(dt);
+
+	  //Are we in air?
+	  if (!_grounded) {
+		  // Check to see if we have landed yet
+		  _grounded = isGrounded();
+		  // disable friction while jumping
+		  setFriction(0.f);
+	  }
+	  else {
+		  setFriction(0.1f);
+	  }
+
+	  // Clamp velocity.
+	  auto v = getVelocity();
+	  v.x = copysign(min(abs(v.x), _maxVelocity.x), v.x);
+	  v.y = copysign(min(abs(v.y), _maxVelocity.y), v.y);
+	  setVelocity(v);
+
+	  PhysicsComponent::update(dt);
+
 }
+
+ 
+  
 
 PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p,
                                                const Vector2f& size, const std::vector <sf::Vector2ul> doors)

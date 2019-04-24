@@ -17,6 +17,12 @@ shared_ptr<Entity> txt2;
 shared_ptr<Entity> txt3;
 float dtMenu;
 
+
+
+
+
+sf::Event Event;
+
 void MenuScene::Load() {
 	dtMenu = 0.0f;
 	cout << "Menu Load \n";

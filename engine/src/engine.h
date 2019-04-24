@@ -5,6 +5,8 @@
 #include <maths.h>
 #include <mutex>
 #include <string>
+#include <SFML\Window\Event.hpp>
+#include <map>
 
 #define GAMEX 1920
 #define GAMEY 1080
@@ -36,19 +38,47 @@ private:
 
 class Engine {
 public:
-  Engine() = delete;
-  static void Start(unsigned int width, unsigned int height,
-                    const std::string& gameName, Scene* scn);
-  static void ChangeScene(Scene*);
-  static sf::RenderWindow& GetWindow();
-  static sf::Vector2u getWindowSize();
-  static void setVsync(bool b);
+	Engine() = delete;
+	static void Start(unsigned int width, unsigned int height,
+		const std::string& gameName, Scene* scn);
+	static void ChangeScene(Scene*);
+	static sf::RenderWindow& GetWindow();
+	static sf::Vector2u getWindowSize();
+	static void setVsync(bool b);
+
+
+	//MOUSE BINDING VARIABLES AND METHODS
+
+	static enum InputType
+	{
+		KeyboardInput,
+		MouseInput,
+		JoystickInput
+	};
+
+	static struct MyKeys
+	{
+		InputType myInputType;
+		sf::Event::EventType myEventType;
+		sf::Keyboard::Key myKeyCode;
+		sf::Mouse::Button myMouseButton;
+		sf::Joystick::Axis myJoysticAxis;
+		int JoysticButtonNum;
+	};
+
+	static std::map<std::string, MyKeys> getKeysss();
+	static void setKeysss(std::map<std::string, MyKeys> test);
+	static MyKeys _key;
+	static std::map<std::string, MyKeys> _Keysss;
 
 private:
   static Scene* _activeScene;
   static std::string _gameName;
   static void Update();
   static void Render(sf::RenderWindow& window);
+
+  
+
 };
 
 namespace timing {

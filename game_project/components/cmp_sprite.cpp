@@ -1,9 +1,12 @@
 
 #include "cmp_sprite.h"
 #include "system_renderer.h"
+#include <engine.h>
 
 using namespace std;
 
+float tileSizeHERE = GAMEX / 64;
+auto spriteOffset = sf::Vector2f(-tileSizeHERE / DIVIDER,- tileSizeHERE /DIVIDER );
 
 void SpriteComponent::setTexure(std::shared_ptr<sf::Texture> tex)
 {
@@ -17,14 +20,14 @@ SpriteComponent::SpriteComponent(Entity* p)
     : Component(p), _sprite(make_shared<sf::Sprite>()) {}
 
 void SpriteComponent::update(double dt) {
-  _sprite->setPosition(_parent->getPosition());
+  _sprite->setPosition(_parent->getPosition() + spriteOffset);
   _sprite->setRotation(_parent->getRotation());
 }
 
 void SpriteComponent::render() { Renderer::queue(_sprite.get()); }
 
 void ShapeComponent::update(double dt) {
-  _shape->setPosition(_parent->getPosition());
+  _shape->setPosition(_parent->getPosition() + spriteOffset);
   _shape->setRotation(_parent->getRotation());
 }
 

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <stdexcept>
 
+
+
 using namespace sf;
 using namespace std;
 Scene* Engine::_activeScene = nullptr;
@@ -18,7 +20,25 @@ static float loadingspinner = 0.f;
 static float loadingTime;
 static RenderWindow* _window;
 
+std::map<std::string, Engine::MyKeys>Engine::_Keysss;
+Engine::MyKeys Engine::_key;
+
 bool gamePause = false;
+
+
+void Engine::setKeysss(std::map<std::string, MyKeys> test) {
+	Engine::_Keysss = test;
+}
+
+std::map<std::string, Engine::MyKeys> Engine::getKeysss() {
+	return Engine::_Keysss;
+}
+
+static bool TestEvent(Engine::MyKeys k, sf::Event e);
+
+
+
+
 
 void Loading_update(float dt, const Scene* const scn) {
   //  cout << "Eng: Loading Screen\n";
@@ -91,16 +111,93 @@ void Engine::Start(unsigned int width, unsigned int height,
   Renderer::initialise(window);
   Physics::initialise();
   ChangeScene(scn);
+
+
+  // Variables for demo
+  
+	// Let's bind the left mouse button to the "Click" action
+  _key.myInputType = MouseInput;
+  _key.myEventType = sf::Event::MouseButtonPressed;
+  _key.myMouseButton = sf::Mouse::Left;
+  _Keysss["Click"] = _key;
+
+  // Let's bind the Return key to the "Jump" action
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Up;
+  _key.JoysticButtonNum = 0;
+  _Keysss["Jump"] = _key;
+
+
+  // Let's bind the Left Control key to the "Left" action
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Left;
+  _Keysss["Left"] = _key;
+
+  //Let's bind the Left Control key to the "Right" action
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Right;
+  _Keysss["Right"] = _key;
+
+  //Let's bind the Left Control key to the "Space" action
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Space;
+  _Keysss["Space"] = _key;
+
+  //Let's bind the Esc Control key to the "Escape" action
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Escape;
+  _Keysss["Escape"] = _key;
+
+  //Let's bind the Esc Control key to the "Escape" action
+  _key.myInputType = JoystickInput;
+  _key.myEventType = sf::Event::JoystickButtonPressed;
+  _key.myJoysticAxis = sf::Joystick::PovY;
+  _key.JoysticButtonNum = 7;
+  _Keysss["Pause"] = _key;
+
+
   while (window.isOpen()) {
     Event event;
     while (window.pollEvent(event)) {
+		//setKeysss(_Keysss);
       if (event.type == Event::Closed) {
         window.close();
       }
+
+	  /*if (event.type == Event::KeyPressed) {		//For debugging
+		  cout << "PRESSED" << endl;
+	  }*/
+ 	 if (TestEvent(_Keysss["Escape"], event))
+	  {
+		  // You can use a function
+		  window.close();
+	  }
+
+
+
     }
-    if (Keyboard::isKeyPressed(Keyboard::Escape)) {
-      window.close();
-    }
+
+
+	//if (sf::Joystick::getAxisPosition(0, _Keysss["Pause"].myJoysticAxis) > 0) {
+	//	gamePause = !gamePause;
+	//}
+
+
+	//if (sf::Joystick::isButtonPressed(0,_Keysss["Escape"].JoysticButtonNum) > 0) {
+	//	gamePause = !gamePause;
+	//}
+
+
+
+
+    //if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+    //  window.close();
+    //}
 
 	if (Keyboard::isKeyPressed(Keyboard::P)) {
 		gamePause = !gamePause;
@@ -112,6 +209,7 @@ void Engine::Start(unsigned int width, unsigned int height,
 		Update();
 	}
 
+
     Render(window);
     window.display();
   }
@@ -122,6 +220,28 @@ void Engine::Start(unsigned int width, unsigned int height,
   window.close();
   Physics::shutdown();
   // Render::shutdown();
+}
+
+
+
+
+bool TestEvent(Engine::MyKeys k, sf::Event e)
+{
+	// Mouse event
+	if (k.myInputType == Engine::MouseInput &&
+		k.myEventType == e.type &&
+		k.myMouseButton == e.mouseButton.button)
+	{
+		return (true);
+	}
+	// Keyboard event
+	if (k.myInputType == Engine::KeyboardInput &&
+		k.myEventType == e.type &&
+		k.myKeyCode == e.key.code)
+	{
+		return (true);
+	}
+	return (false);
 }
 
 std::shared_ptr<Entity> Scene::makeEntity() {
@@ -205,7 +325,7 @@ sf::FloatRect Scene::CalculateViewport(const sf::Vector2u& screensize,
 	return sf::FloatRect(0, 0, widthPercent, heightPercent);
 }
 
-void Scene::Update(const double& dt) { ents.update(dt); }
+void Scene::Update(const double& dt) { if (!gamePause) { ents.update(dt); } }
 
 void Scene::Render() { ents.render(); }
 
