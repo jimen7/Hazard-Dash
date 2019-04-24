@@ -62,9 +62,11 @@ public:
 		sf::Event::EventType myEventType;
 		sf::Keyboard::Key myKeyCode;
 		sf::Mouse::Button myMouseButton;
+		sf::Joystick::Axis myJoysticAxis;
+		int JoysticButtonNum;
 	};
 
-	std::map<std::string, MyKeys> getKeysss();
+	static std::map<std::string, MyKeys> getKeysss();
 	static void setKeysss(std::map<std::string, MyKeys> test);
 	static MyKeys _key;
 	static std::map<std::string, MyKeys> _Keysss;

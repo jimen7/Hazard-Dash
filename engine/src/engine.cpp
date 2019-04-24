@@ -125,6 +125,7 @@ void Engine::Start(unsigned int width, unsigned int height,
   _key.myInputType = KeyboardInput;
   _key.myEventType = sf::Event::KeyPressed;
   _key.myKeyCode = sf::Keyboard::Up;
+  _key.JoysticButtonNum = 0;
   _Keysss["Jump"] = _key;
 
 
@@ -152,6 +153,13 @@ void Engine::Start(unsigned int width, unsigned int height,
   _key.myKeyCode = sf::Keyboard::Escape;
   _Keysss["Escape"] = _key;
 
+  //Let's bind the Esc Control key to the "Escape" action
+  _key.myInputType = JoystickInput;
+  _key.myEventType = sf::Event::JoystickButtonPressed;
+  _key.myJoysticAxis = sf::Joystick::PovY;
+  _key.JoysticButtonNum = 7;
+  _Keysss["Pause"] = _key;
+
 
   while (window.isOpen()) {
     Event event;
@@ -170,9 +178,19 @@ void Engine::Start(unsigned int width, unsigned int height,
 		  window.close();
 	  }
 
+
+
     }
 
 
+	//if (sf::Joystick::getAxisPosition(0, _Keysss["Pause"].myJoysticAxis) > 0) {
+	//	gamePause = !gamePause;
+	//}
+
+
+	//if (sf::Joystick::isButtonPressed(0,_Keysss["Escape"].JoysticButtonNum) > 0) {
+	//	gamePause = !gamePause;
+	//}
 
 
 
@@ -307,7 +325,7 @@ sf::FloatRect Scene::CalculateViewport(const sf::Vector2u& screensize,
 	return sf::FloatRect(0, 0, widthPercent, heightPercent);
 }
 
-void Scene::Update(const double& dt) { ents.update(dt); }
+void Scene::Update(const double& dt) { if (!gamePause) { ents.update(dt); } }
 
 void Scene::Render() { ents.render(); }
 

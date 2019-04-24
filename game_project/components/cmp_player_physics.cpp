@@ -11,9 +11,6 @@ using namespace Physics;
 
 
 
-
-
-
 bool PlayerPhysicsComponent::isGrounded() const {
   auto touch = getTouching();
   const auto& pos = _body->GetPosition();
@@ -48,13 +45,35 @@ void PlayerPhysicsComponent::update(double dt) {
   if (!_AIMode) {
 	  if (Joystick::isConnected(0)) {	//IF CONTROLLER IS CONNECTED USE IT
 
+		  /*Joystick GLOSSARY:
+
+		  X axis: left pad x axis
+		  Y Axis: left pad Y acis
+		  Z Axis: RT and LT values
+		  R AXIS: NO R AXIS ON XBOX CONTROLLER
+		  U Axis: Right pad X axis
+		  V Axis: Right Pad Y axis
+		  POVX Axis: Directional Pad X axis		//Dogy as whn moving Y axis it registers weird Numbers
+		  POVY AXIS:  Directional Pad Y axis	//Dodgy as when moving X axis it registers weird numbers
+		  Button 0: A
+		  Button 1: B
+		  Button 2: X
+		  Button 3: Y
+		  Button 4: LB
+		  Button 5: RB
+		  Button 6: SELECT
+		  Button 7: START
+		  Button 8: Left Pad Button
+		  Button 9: Right Pad Button
+		  */
+
+
 
 	//  sf::Joystick::update();		//NEED THIS TO KEEP INPUT OF JOYSTIC UP TO DATE
 
 		  float xxx = sf::Joystick::getAxisPosition(0, sf::Joystick::X);	//Gets the x axis value of the Left Pad of the controller
 		  //float yyy = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);	//Gets the y axis value of the Left Pad of the controller
-
-		  //cout << xxx << endl;
+		  //cout << yyy << endl;
 
 		  if (xxx > 50.f || xxx < -50.f) {	//Controller inputs go grom -100 to 100, and since sticks are usually sticky we need to make sure players apply enough force.
 			  // Moving Either Left or Right
@@ -72,7 +91,7 @@ void PlayerPhysicsComponent::update(double dt) {
 			  dampen({ 0.9f, 1.0f });
 		  }
 		  // Handle Jump
-		  if (Joystick::isButtonPressed(0, 0)) {
+		  if (Joystick::isButtonPressed(0, Engine::getKeysss()["Jump"].JoysticButtonNum)) {
 			  // Handle Jump
 			  _grounded = isGrounded();
 			  if (_grounded) {
