@@ -3,6 +3,7 @@
 #include "cmp_health.h"
 #include "cmp_text.h"
 #include "system_renderer.h"
+#include "cmp_sprite.h"
 
 #include "system_physics.h"
 #include <LevelSystem.h>
@@ -59,10 +60,6 @@ void TrapComponent::update(double dt)
 	if (l<25.0) {
 			//cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 			_trap_colour = _selected_trap_colour;	//Set the print colour tpo be highlighted
-		
-
-			
-
 	}
 	else {
 			_trap_colour = _original_trap_colour;	//Set the print colout to be the original
@@ -107,14 +104,26 @@ void TrapComponent::update(double dt)
 }
 
 void TrapComponent::render() {
-	_rs.setFillColor(_trap_colour);
+	/*_rs.setFillColor(_trap_colour);
 	_rs.setSize({ tileSizeTEMP ,tileSizeTEMP });
 	_rs.setPosition(_parent->getPosition() + Vector2f(-tileSizeTEMP/ DIVIDER, -tileSizeTEMP / DIVIDER));
-	Renderer::queue(&_rs);
+	Renderer::queue(&_rs);*/
 }
 
 
 TrapComponent::TrapComponent(Entity* p, const sf::Vector2f& size) : Component(p) {
+
+	auto s = _parent->GetCompatibleComponent<SpriteComponent>()[0];
+
+	_trapSpritesheet = std::make_shared<sf::Texture>();
+
+	_trapSpritesheet->loadFromFile("res/Sprites/Esquire2.png");
+	if (!_trapSpritesheet->loadFromFile("res/Sprites/Esquire2.png")) {
+		cerr << "Failed to load spritesheet!" << std::endl;
+	}
+	s->setTexure(_trapSpritesheet);
+	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+	s->setTextureRect(sf::IntRect(0, 128, 32, 32));
 	_damage = 0;
 	//_pushForce = 1.03f;
 	_pushForce = 0.03f;
@@ -123,8 +132,17 @@ TrapComponent::TrapComponent(Entity* p, const sf::Vector2f& size) : Component(p)
 
 void SpikeTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 {
-	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce)-1.0f*direction);
-	e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
+	//const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+	//// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+	//const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+	//const auto dir = Vector2f(worldPos) - _parent->getPosition();//Gets mouse potition in relation to tile's
+	//const auto l = sf::length(dir);
+
+	//if (l < 25.0&&sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
+		e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
+	//}
+	
 }
 
 SpikeTrapComponent::SpikeTrapComponent(Entity* p, const sf::Vector2f& size) : TrapComponent(p,size) {
@@ -145,6 +163,20 @@ void MineTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 }
 
 MineTrapComponent::MineTrapComponent(Entity* p, const sf::Vector2f& size) : TrapComponent(p, size) {
+
+	auto s = _parent->GetCompatibleComponent<SpriteComponent>()[0];
+
+	_trapSpritesheet = std::make_shared<sf::Texture>();
+
+	_trapSpritesheet->loadFromFile("res/Sprites/traps/mine/mine_1_correct.png");
+	if (!_trapSpritesheet->loadFromFile("res/Sprites/traps/mine/mine_1_correct.png")) {
+		cerr << "Failed to load spritesheet!" << std::endl;
+	}
+	s->setTexure(_trapSpritesheet);
+	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+
+
 	_damage = 50;
 	_original_trap_colour = sf::Color::Yellow;
 	//_pushForce = 1.03f;

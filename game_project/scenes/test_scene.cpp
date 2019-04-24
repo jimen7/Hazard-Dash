@@ -33,6 +33,8 @@ std::vector<int> indexOfHeroesToRemove;
 
 shared_ptr<sf::Texture> playerSpritesheet;
 
+shared_ptr<sf::Texture> trapSpritesheet;
+
 
 std::vector<shared_ptr<Entity>> entityTrapsList;
 
@@ -77,22 +79,19 @@ void TestScene::Load() {
 
 	playerSpritesheet = make_shared<sf::Texture>();
 
-	playerSpritesheet->loadFromFile("res/Sprites/Esquire3.png");
-	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {
+	playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png");
+	if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png")) {
 		cerr << "Failed to load spritesheet!" << std::endl;
 	}
 	auto s = player->addComponent<SpriteComponent>();
 	s->setTexure(playerSpritesheet);
 	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
-	s->setTextureRect(sf::IntRect(0, 0, 16, 16));
+	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 
 
     player->addComponent<PlayerPhysicsComponent>(Vector2f(float(tileSize) / 2.0f ,float(tileSize) * (3.0f/4.0f)), doors);	//HOW IT WAS ORIGINALLY IMPLEMENTED
-	//player->GetCompatibleComponent<PhysicsComponent>()[0]->
-	//player->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize));
-	//player->addComponent<PlayerPhysicsComponent>(Vector2f(tileSize , tileSize *2), doors);
 	player->addComponent<HealthComponent>(100.0f);
-	player->addComponent<AIComponent>();
+	//player->addComponent<AIComponent>();
 	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
 	music.play();
@@ -119,6 +118,20 @@ void TestScene::Load() {
 		pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
 		auto e = makeEntity();
 		e->setPosition(pos);
+
+		trapSpritesheet = make_shared<sf::Texture>();
+
+		trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png");
+		if (!trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {
+			cerr << "Failed to load spritesheet!" << std::endl;
+		}
+		auto s = e->addComponent<SpriteComponent>();
+		s->setTexure(trapSpritesheet);
+		//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+		s->setTextureRect(sf::IntRect(0, 128, 32, 32));
+		//s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+
+
 		//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
 		e->addComponent<TextComponent>("Empty");

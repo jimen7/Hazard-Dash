@@ -4,6 +4,7 @@
 #include "ecm.h"
 #include <Box2D/Dynamics/b2Body.h>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Texture.hpp>
 
 
 class TrapComponent : public Component {
@@ -21,6 +22,10 @@ protected:
 	sf::Color _selected_trap_colour = sf::Color::Magenta;	//When hovering over Trap colour will change tro magenta
 	sf::Color _original_trap_colour = sf::Color::White;		//Each trap will have a different colour. For empty trap it is white
 	sf::RectangleShape _rs;
+
+	//Sprites
+	std::shared_ptr<sf::Texture> _trapSpritesheet;  //
+
 
 public:
 	//static std::vector<std::shared_ptr<Entity>>* heroes_list;	//Points to the list in our main scene of the heroes
