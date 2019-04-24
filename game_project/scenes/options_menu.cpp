@@ -13,10 +13,11 @@ shared_ptr<sf::Texture> tex2;
 Sprite background2;
 shared_ptr<Entity> backEnt2;
 shared_ptr<Entity> txt;
+float dtOptions;
 
 
 void OptionsScene::Load() {
-	cout << "Menu Load \n";
+	dtOptions = 0.0f;
 	{
 		tex2 = make_shared<sf::Texture>();
 		if (!tex2->loadFromFile("res/Sprites/Menu_Options.png"))
@@ -69,40 +70,136 @@ void OptionsScene::Load() {
 }
 
 void OptionsScene::Update(const double& dt) {
-
+	dtOptions += dt;
 	// get the current mouse position in the window
 	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
 	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
 	const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
 
-	if (worldPos.x > 676.0f && worldPos.x < 1272.0f && worldPos.y > 278.0f && worldPos.y < 359.0f) {
+	if (worldPos.x > 847.0f && worldPos.x < 1377.0f && worldPos.y > 304.0f && worldPos.y < 349.0f) {
 		txt->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::Red);
 	}
-	else if (worldPos.x > 747.0f && worldPos.x < 1174.0f && worldPos.y > 466.0f && worldPos.y < 562.0f) {
-		txt->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::Red);
+	else if (worldPos.x > 834.0f && worldPos.x < 1021.0f && worldPos.y > 417.0f && worldPos.y < 453.0f) {
+		txt->GetCompatibleComponent<TextComponent>()[4]->setColour(Color::Red);
 	}
-	else if (worldPos.x > 826.0f && worldPos.x < 1056.0f && worldPos.y > 670.0f && worldPos.y < 759.0f) {
-		txt->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::Red);
+	else if (worldPos.x > 1104.0f && worldPos.x < 1320.0f && worldPos.y > 417.0f && worldPos.y < 448.0f) {
+		txt->GetCompatibleComponent<TextComponent>()[5]->setColour(Color::Red);
+	}
+	else if (worldPos.x > 837.0f && worldPos.x < 1047.0f && worldPos.y > 478.0f && worldPos.y < 510.0f) {
+		txt->GetCompatibleComponent<TextComponent>()[6]->setColour(Color::Red);
+	}
+	else if (worldPos.x > 1101.0f && worldPos.x < 1314.0f && worldPos.y > 478.0f && worldPos.y < 510.0f) {
+		txt->GetCompatibleComponent<TextComponent>()[7]->setColour(Color::Red);
+	}
+	else if (worldPos.x > 834.0f && worldPos.x < 1192.0f && worldPos.y > 570.0f && worldPos.y < 612.0f) {
+		txt->GetCompatibleComponent<TextComponent>()[3]->setColour(Color::Red);
+	}
+	else if (worldPos.x > 832.0f && worldPos.x < 897.0f && worldPos.y > 655.0f && worldPos.y < 688.0f) {
+		txt->GetCompatibleComponent<TextComponent>()[9]->setColour(Color::Red);
+	}
+	else if (worldPos.x > 1002.0f && worldPos.x < 1044.0f && worldPos.y > 652.0f && worldPos.y < 693.0f) {
+		txt->GetCompatibleComponent<TextComponent>()[10]->setColour(Color::Red);
+	}
+	else if (worldPos.x > 832.0f && worldPos.x < 927.0f && worldPos.y > 727.0f && worldPos.y < 763.0f) {
+		txt->GetCompatibleComponent<TextComponent>()[2]->setColour(Color::Red);
 	}
 	else {
-		txt->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::White);
-		txt->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::White);
-		txt->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::White);
+		for (int i = 0; i < 11; i++) {
+			txt->GetCompatibleComponent<TextComponent>()[i]->setColour(Color::White);
+		}
 	}
 
-
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		if (worldPos.x > 676.0f && worldPos.x < 1272.0f && worldPos.y > 278.0f && worldPos.y < 359.0f) {
-			Engine::ChangeScene(&testLevel);
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtOptions > 0.2f) {
+		dtOptions = 0.0f;
+		if (worldPos.x > 834.0f && worldPos.x < 1021.0f && worldPos.y > 417.0f && worldPos.y < 453.0f) {
+			const sf::Vector2u gamesize(GAMEX, GAMEY);
+			const sf::Vector2u screensize = sf::Vector2u(1280, 720);
+			Engine::GetWindow().setSize(screensize);
+			//set View as normal
+			sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
+			auto v = sf::View(visibleArea);
+			// figure out how to scale and maintain aspect;
+			auto viewport = CalculateViewport(screensize, gamesize);
+			//Optionally Center it
+			bool centered = true;
+			if (centered) {
+				viewport.left = (1.0 - viewport.width) * 0.5;
+				viewport.top = (1.0 - viewport.height) * 0.5;
+			}
+			//set!
+			v.setViewport(viewport);
+			Engine::GetWindow().setView(v);
 		}
-		else if (worldPos.x > 747.0f && worldPos.x < 1174.0f && worldPos.y > 466.0f && worldPos.y < 562.0f) {
-			//Engine::ChangeScene(&testLevel);
+		else if (worldPos.x > 1104.0f && worldPos.x < 1320.0f && worldPos.y > 417.0f && worldPos.y < 448.0f) {
+			const sf::Vector2u gamesize(GAMEX, GAMEY);
+			const sf::Vector2u screensize = sf::Vector2u(1920, 1080);
+			Engine::GetWindow().setSize(screensize);
+			//set View as normal
+			sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
+			auto v = sf::View(visibleArea);
+			// figure out how to scale and maintain aspect;
+			auto viewport = CalculateViewport(screensize, gamesize);
+			//Optionally Center it
+			bool centered = true;
+			if (centered) {
+				viewport.left = (1.0 - viewport.width) * 0.5;
+				viewport.top = (1.0 - viewport.height) * 0.5;
+			}
+			//set!
+			v.setViewport(viewport);
+			Engine::GetWindow().setView(v);
 		}
-		else if (worldPos.x > 826.0f && worldPos.x < 1056.0f && worldPos.y > 670.0f && worldPos.y < 759.0f) {
+		else if (worldPos.x > 837.0f && worldPos.x < 1047.0f && worldPos.y > 478.0f && worldPos.y < 510.0f) {
+			const sf::Vector2u gamesize(GAMEX, GAMEY);
+			const sf::Vector2u screensize = sf::Vector2u(2560, 1440);
+			Engine::GetWindow().setSize(screensize);
+			//set View as normal
+			sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
+			auto v = sf::View(visibleArea);
+			// figure out how to scale and maintain aspect;
+			auto viewport = CalculateViewport(screensize, gamesize);
+			//Optionally Center it
+			bool centered = true;
+			if (centered) {
+				viewport.left = (1.0 - viewport.width) * 0.5;
+				viewport.top = (1.0 - viewport.height) * 0.5;
+			}
+			//set!
+			v.setViewport(viewport);
+			Engine::GetWindow().setView(v);
+		}
+		else if (worldPos.x > 1101.0f && worldPos.x < 1314.0f && worldPos.y > 478.0f && worldPos.y < 510.0f) {
+			const sf::Vector2u gamesize(GAMEX, GAMEY);
+			const sf::Vector2u screensize = sf::Vector2u(3840, 2160);
+			Engine::GetWindow().setSize(screensize);
+			//set View as normal
+			sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
+			auto v = sf::View(visibleArea);
+			// figure out how to scale and maintain aspect;
+			auto viewport = CalculateViewport(screensize, gamesize);
+			//Optionally Center it
+			bool centered = true;
+			if (centered) {
+				viewport.left = (1.0 - viewport.width) * 0.5;
+				viewport.top = (1.0 - viewport.height) * 0.5;
+			}
+			//set!
+			v.setViewport(viewport);
+			Engine::GetWindow().setView(v);
+		}
+		else if (worldPos.x > 832.0f && worldPos.x < 897.0f && worldPos.y > 655.0f && worldPos.y < 688.0f) {
+			Engine::GetWindow().create(sf::VideoMode::getFullscreenModes()[0], "Hazard Dash");
+		}
+		else if (worldPos.x > 1002.0f && worldPos.x < 1044.0f && worldPos.y > 652.0f && worldPos.y < 693.0f) {
+			Engine::GetWindow().create(sf::VideoMode::getFullscreenModes()[0], "Hazard Dash", sf::Style::Fullscreen);
+		}
+		else if (worldPos.x > 832.0f && worldPos.x < 927.0f && worldPos.y > 727.0f && worldPos.y < 763.0f) {
 			Engine::ChangeScene(&menu);
 		}
+		else if (worldPos.x > 834.0f && worldPos.x < 1192.0f && worldPos.y > 570.0f && worldPos.y < 612.0f) {
+			Engine::ChangeScene(&rebindLevel);
+		}
 	}
-
 	Scene::Update(dt);
 }
 

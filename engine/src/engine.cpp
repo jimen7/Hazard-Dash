@@ -237,7 +237,6 @@ void Scene::UnLoad() {
 }
 
 void Scene::Load() {
-	//const sf::Vector2u screensize(1000, 1000);
 	const sf::Vector2u gamesize(GAMEX, GAMEY);
 	//set View as normal
 	//Engine::GetWindow().setSize(screensize);

@@ -15,8 +15,10 @@ shared_ptr<Entity> backEnt;
 shared_ptr<Entity> txt1;
 shared_ptr<Entity> txt2;
 shared_ptr<Entity> txt3;
+float dtMenu;
 
 void MenuScene::Load() {
+	dtMenu = 0.0f;
 	cout << "Menu Load \n";
 	{
 		tex = make_shared<sf::Texture>();
@@ -48,6 +50,7 @@ void MenuScene::Load() {
 
 void MenuScene::Update(const double& dt) {
 
+	dtMenu += dt;
 	// get the current mouse position in the window
 	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
 	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
@@ -69,7 +72,7 @@ void MenuScene::Update(const double& dt) {
 	}
 
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtMenu > 0.2f) {
 		if (worldPos.x > 676.0f && worldPos.x < 1272.0f && worldPos.y > 278.0f && worldPos.y < 359.0f) {
 			Engine::ChangeScene(&testLevel);
 		}
