@@ -9,13 +9,14 @@ protected:
   std::vector <sf::Vector2ul> _doors;
   bool _grounded;
   float _groundspeed;
-  enum controller{UP,LEFT,RIGHT};
-  bool _joysticConnected;
+
 
   bool isGrounded() const;
 
 public:
   void update(double dt) override;
+
+
 
   explicit PlayerPhysicsComponent(Entity* p, const sf::Vector2f& size, const std::vector <sf::Vector2ul> doors);
 

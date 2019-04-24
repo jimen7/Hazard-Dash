@@ -77,6 +77,7 @@ void TrapComponent::update(double dt)
 		else {
 			auto collidingObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();//Gets any colliding objects with the trap, improved from checking against every hero
 
+
 			for (auto k : collidingObjects) {
 				Entity* e1 = (Entity*)k->GetFixtureA()->GetUserData();
 				Entity* e2 = (Entity*)k->GetFixtureB()->GetUserData();

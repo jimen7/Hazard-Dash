@@ -13,7 +13,14 @@ std::shared_ptr<sf::Texture> tex;
 sf::Sprite background;
 shared_ptr<Entity> backEnt;
 
+
+
+
+
+sf::Event Event;
+
 void MenuScene::Load() {
+
   cout << "Menu Load \n";
   {
 	tex = make_shared<sf::Texture>();
@@ -55,4 +62,3 @@ void MenuScene::Update(const double& dt) {
 
   Scene::Update(dt);
 }
-
