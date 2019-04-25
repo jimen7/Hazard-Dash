@@ -28,4 +28,5 @@ public:
   void setAIMode(bool AIMode) { _AIMode = AIMode; }
   void setGoingLeft(bool goingLeft) { _goingLeft = goingLeft; }
   void setJumping(bool jumping) { _jumping = jumping; }
+
 };
