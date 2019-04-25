@@ -1,5 +1,6 @@
 #include "cmp_door.h"
 #include "cmp_physics.h"
+#include "cmp_AI.h"
 #include "system_physics.h"
 
 
@@ -33,6 +34,9 @@ void DoorComponent::update(double dt)
 			}
 
 			other->GetCompatibleComponent<PhysicsComponent>()[0]->teleport(_nextDoor);
+			if (_nextDoor == sf::Vector2f(1860, 960)) {
+				other->GetCompatibleComponent<AIComponent>()[0]->setSwitch();
+			}
 			auto s = 1;
 		}
 	}

@@ -135,13 +135,15 @@ void PlayerPhysicsComponent::update(double dt) {
 	  }
   }
   else {
-	  if (!_goingLeft) {
-		  if (getVelocity().x < _maxVelocity.x)
-			  impulse({ (float)(dt * _groundspeed), 0 });
-	  }
-	  else {
-		  if (getVelocity().x > -_maxVelocity.x)
-			  impulse({ -(float)(dt * _groundspeed), 0 });
+	  if (!_stop) {
+		  if (!_goingLeft) {
+			  if (getVelocity().x < _maxVelocity.x)
+				  impulse({ (float)(dt * _groundspeed), 0 });
+		  }
+		  else {
+			  if (getVelocity().x > -_maxVelocity.x)
+				  impulse({ -(float)(dt * _groundspeed), 0 });
+		  }
 	  }
 
 	  if (_jumping) {

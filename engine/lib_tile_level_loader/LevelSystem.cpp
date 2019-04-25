@@ -128,7 +128,7 @@ void LevelSystem::buildSprites(bool optimise) {
 		for (size_t x = 0; x < _width; ++x) {
 			Tile t = getTile({ x, y });
 			// ENUM Doesn't take -1 it overflows and goes to 255
-			if (t == 255 || t == LEFT || t == RIGHT || t == UPLEFT || t == UPRIGHT || t == SPECIAL) {
+			if (t == 255 || t == LEFT || t == RIGHT || t == UPLEFT || t == UPRIGHT || t == SPECIAL || t == UP) {
 				tps.push_back({ getTilePosition({ x, y }), tls, getColor(t),true,sf::IntRect(64, 30, 32, 32), backroundSpritesheet, });
 			}
 			if (t == DOOR || t == TELEPORT) {

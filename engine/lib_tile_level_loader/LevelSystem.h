@@ -28,7 +28,8 @@ public:
 	UPLEFT = 2,
 	UPRIGHT = 3,
 	SPECIAL = 4,
-	TELEPORT = 38
+	TELEPORT = 38,
+	UP = 5
   };
 
   static Tile getTile(sf::Vector2ul);
