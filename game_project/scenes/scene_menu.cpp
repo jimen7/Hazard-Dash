@@ -78,7 +78,7 @@ void MenuScene::Update(const double& dt) {
 	}
 
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtMenu > 0.2f) {
+	if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton) && dtMenu > 0.2f) {
 		if (worldPos.x > 676.0f && worldPos.x < 1272.0f && worldPos.y > 278.0f && worldPos.y < 359.0f) {
 			Engine::ChangeScene(&testLevel);
 		}

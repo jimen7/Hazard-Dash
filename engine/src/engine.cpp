@@ -173,10 +173,11 @@ void Engine::Start(unsigned int width, unsigned int height,
   _Keysss["Escape"] = _key;
 
   //Let's bind the Esc Control key to the "Escape" action
-  _key.myInputType = JoystickInput;
-  _key.myEventType = sf::Event::JoystickButtonPressed;
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
   _key.myJoysticAxis = sf::Joystick::PovY;
   _key.JoysticButtonNum = 7;
+  _key.myKeyCode = sf::Keyboard::P;
   _Keysss["Pause"] = _key;
 
 
@@ -197,7 +198,9 @@ void Engine::Start(unsigned int width, unsigned int height,
 		  window.close();
 	  }
 
-
+	 if (TestEvent(_Keysss["Pause"], event)) {
+		 gamePause = !gamePause;
+	 }
 
     }
 
@@ -218,9 +221,7 @@ void Engine::Start(unsigned int width, unsigned int height,
     //  window.close();
     //}
 
-	if (Keyboard::isKeyPressed(Keyboard::P)) {
-		gamePause = !gamePause;
-	}
+
 
     window.clear();
 

@@ -78,7 +78,7 @@ void RebindScene::Load() {
 	setLoaded(true);
 	Scene::Load();
 }
-
+//Methods that rebinds the buttons
 void reBind() {
 	if (toBeRebind) {//If button needs to be rebound
 		auto textComponents = txt4->GetCompatibleComponent<TextComponent>();
@@ -124,6 +124,39 @@ void reBind() {
 						}
 
 					}
+				}
+
+				if (inputTypeVar == 2) {
+
+					for (int KeyyInt = sf::Keyboard::Key::Unknown; KeyyInt != sf::Keyboard::Pause; KeyyInt++) {	//Start from A instead of Uknown
+						sf::Keyboard::Key test = static_cast<sf::Keyboard::Key>(KeyyInt);
+
+						if (sf::Keyboard::isKeyPressed(test)) {
+							Engine::setKeyboardbutton(actionDesc, test);
+							textComponents[i]->SetText(actionDesc + ": Assigned");	//Set Keyword Back to ssigned
+							txt4->GetCompatibleComponent<TextComponent>()[6]->SetText("");
+							toBeRebind = false;
+							break;
+						}
+
+
+					}
+
+				}
+
+				else if (inputTypeVar == 3) {
+
+					for (int MouseInt = sf::Mouse::Button::Left; MouseInt != sf::Mouse::Button::ButtonCount; MouseInt++) {	//Start from A instead of Uknown
+						sf::Mouse::Button test = static_cast<sf::Mouse::Button>(MouseInt);
+						if (sf::Mouse::isButtonPressed(test)) {
+							Engine::setMouseButton(actionDesc, test);
+							textComponents[i]->SetText(actionDesc + ": Assigned");	//Set Keyword Back to ssigned
+							txt4->GetCompatibleComponent<TextComponent>()[6]->SetText("");
+							toBeRebind = false;
+							break;
+						}
+					}
+
 				}
 
 
@@ -196,14 +229,27 @@ void RebindScene::Update(const double& dt) {
 		else if (worldPos.x > 525 && worldPos.x < 753 && worldPos.y > 504 && worldPos.y < 547) {
 			txt4->GetCompatibleComponent<TextComponent>()[6]->SetText("Press Button to\nconfirm choice");
 			cout << "Option 3" << endl;
+
+			//DON@T NEED THIS FOR NOW
 		}
 		else if (worldPos.x > 523 && worldPos.x < 738 && worldPos.y > 600 && worldPos.y < 658) {
 			txt4->GetCompatibleComponent<TextComponent>()[6]->SetText("Press Button to\nconfirm choice");
 			cout << "Option 4" << endl;
+
+			actionDesc = "Pause";
+			txt4->GetCompatibleComponent<TextComponent>()[3]->SetText(actionDesc + ": Unassigned");
+			toBeRebind = true;
+			inputTypeVar = 2;
+
 		}
 		else if (worldPos.x > 523 && worldPos.x < 885 && worldPos.y > 700 && worldPos.y < 757) {
 			txt4->GetCompatibleComponent<TextComponent>()[6]->SetText("Press Button to\nconfirm choice");
 			cout << "Option 5" << endl;
+
+			actionDesc = "Click";
+			txt4->GetCompatibleComponent<TextComponent>()[4]->SetText(actionDesc + ": Unassigned");
+			toBeRebind = true;
+			inputTypeVar = 3;
 		}
 
 	}
