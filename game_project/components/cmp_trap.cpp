@@ -10,11 +10,17 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <engine.h>
+#include <thread>
+#include <chrono>
 
 
 using namespace std;
 using namespace sf;
 using namespace Physics;
+
+using namespace std::this_thread; // sleep_for, sleep_until
+using namespace std::chrono; // nanoseconds, system_clock, seconds
+
 // tileSize;
 //Vector2f tilePos;
 
@@ -56,9 +62,8 @@ void TrapComponent::update(double dt)
 	//cout << "Mouse Position:(" << mousePos << ")" << endl;
 	//cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 
-		//if (ls::getTileAt(worldPos)==ls::TRAP && ls::getTileAt(_parent->getPosition()) == ls::TRAP) {		//Tried to see if it was more efficient, it wasn't
+
 	if (l<25.0) {
-			//cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
 			_trap_colour = _selected_trap_colour;	//Set the print colour tpo be highlighted
 	}
 	else {
@@ -72,6 +77,15 @@ void TrapComponent::update(double dt)
 			_timer -= dt;
 		}
 		else {
+
+			if (_damage == 20) {
+				if (l < 25.0 && sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {//Spikes only activate when pressed
+						_parent->setPosition(_parent->getPosition() + Vector2f(0, -tileSizeTEMP));
+						_spikeActivated = true;
+				}
+			}
+			}
+
 			auto collidingObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();//Gets any colliding objects with the trap, improved from checking against every hero
 
 
@@ -88,16 +102,23 @@ void TrapComponent::update(double dt)
 					other = e2;
 				}
 				const auto dir = other->getPosition() - _parent->getPosition();
-				TrapPlayer(other, dir);
+				if (_damage != 20) {//Check its not spikes
+					TrapPlayer(other, dir);
+				}
+				else {
+					if (_spikeActivated) {
+						TrapPlayer(other, dir);
+						_spikeActivated = false;
+					}
+					//_parent->setPosition(_parent->getPosition() + Vector2f(0, -tileSizeTEMP));
+				}
 				auto a = 1;
 				_timer = 0.5;
-				//cout << _timer << endl;
 			}
-		}
 	}
 
 	
-
+	
 
 
 
@@ -132,24 +153,34 @@ TrapComponent::TrapComponent(Entity* p, const sf::Vector2f& size) : Component(p)
 
 void SpikeTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 {
-	//const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
-	//// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
-	//const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
-	//const auto dir = Vector2f(worldPos) - _parent->getPosition();//Gets mouse potition in relation to tile's
-	//const auto l = sf::length(dir);
 
-	//if (l < 25.0&&sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
-		e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
-	//}
+	e->setPosition(e->getPosition()+Vector2f(0,tileSizeTEMP));
+	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
+	e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
+	//sleep_for(std::chrono::seconds(2));
 	
 }
 
 SpikeTrapComponent::SpikeTrapComponent(Entity* p, const sf::Vector2f& size) : TrapComponent(p,size) {
-	_damage = 10;
+	
+	//Sprite Stuff
+	auto s = _parent->GetCompatibleComponent<SpriteComponent>()[0];
+
+	_trapSpritesheet = std::make_shared<sf::Texture>();
+
+	_trapSpritesheet->loadFromFile("res/Sprites/traps/spikes_resized.png");
+	if (!_trapSpritesheet->loadFromFile("res/Sprites/traps/spikes_resized.png")) {
+		cerr << "Failed to load spritesheet!" << std::endl;
+	}
+	s->setTexure(_trapSpritesheet);
+	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+
+	_damage = 20;
 	_original_trap_colour = sf::Color::Blue;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
+	_placed = true;
 	//p->addComponent<TrapComponent>(Vector2f(tileSizeTEMP, tileSizeTEMP));
 }
 
@@ -176,10 +207,11 @@ MineTrapComponent::MineTrapComponent(Entity* p, const sf::Vector2f& size) : Trap
 	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
 	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 
-
+	
 	_damage = 50;
 	_original_trap_colour = sf::Color::Yellow;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
+	_placed = true;
 	//p->addComponent<TrapComponent>(Vector2f(tileSizeTEMP, tileSizeTEMP));
 }

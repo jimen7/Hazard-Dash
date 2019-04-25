@@ -13,7 +13,8 @@ protected:
 	bool _placed = false;
 	double _damage;
 	float _pushForce;
-	float _timer=0;
+	float _timer=0.0f;
+	bool _spikeActivated = false;
 
 	int _trapType = 0;  //0 is deafult for testing(Spikes), 1 is OP spikes  for nopw 
 

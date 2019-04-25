@@ -77,7 +77,7 @@ void TestScene::Load() {
 
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::DOOR)[9]));
-		auto condition = player->addComponent<HealthComponent>(150.0f);
+		auto condition = player->addComponent<HealthComponent>(50.0f);
 		playerSpritesheet = make_shared<sf::Texture>();
 
 		auto s = player->addComponent<SpriteComponent>();
@@ -292,8 +292,8 @@ void TestScene::Update(const double& dt) {
 				}
 			}
 			else {
-				if (Mouse::isButtonPressed(Mouse::Right)) {
-					//t->removeComponent<TrapComponent>();
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					//t->del_components<TrapComponent>();
 				}
 			}
 
