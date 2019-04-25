@@ -4,6 +4,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Joystick.hpp>
 #include <engine.h>
+#include "../game.h"
 
 using namespace std;
 using namespace sf;
@@ -34,6 +35,7 @@ bool PlayerPhysicsComponent::isGrounded() const {
 }
 
 void PlayerPhysicsComponent::update(double dt) {
+
 
   const auto pos = _parent->getPosition();
 
@@ -71,7 +73,7 @@ void PlayerPhysicsComponent::update(double dt) {
 
 	//  sf::Joystick::update();		//NEED THIS TO KEEP INPUT OF JOYSTIC UP TO DATE
 
-		  float xxx = sf::Joystick::getAxisPosition(0, sf::Joystick::X);	//Gets the x axis value of the Left Pad of the controller
+		  float xxx = sf::Joystick::getAxisPosition(0, Engine::getKeysss()["Movement"].myJoysticAxis);	//Gets the x axis value of the Left Pad of the controller
 		  //float yyy = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);	//Gets the y axis value of the Left Pad of the controller
 		  //cout << yyy << endl;
 
