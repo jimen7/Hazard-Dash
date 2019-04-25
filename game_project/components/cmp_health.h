@@ -6,6 +6,7 @@
 class HealthComponent : public Component {
 protected:
 	float _health;
+	float _originalHealth;
 	bool _isAlive;
 	sf::RectangleShape _rs;
 public:
@@ -14,6 +15,7 @@ public:
 	void render() override;
 
 	void ReduceHealth(float amount);
+	float getHealth();
 
 	explicit HealthComponent(Entity* p,  float i);
 	HealthComponent() = delete;

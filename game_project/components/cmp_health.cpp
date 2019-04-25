@@ -12,6 +12,8 @@ using namespace std;
 using namespace sf;
 using namespace Physics;
 
+float tileSizeHealth = GAMEX / 64;
+
 //std::vector<std::shared_ptr<Entity>>* HealthComponent::heroes_list;
 
 //void TrapComponent::getPlayers(std::vector<shared_ptr<Entity*>> _heroes) {
@@ -36,6 +38,9 @@ void HealthComponent::update(double dt)
 		}
 }
 
+float HealthComponent::getHealth() {
+	return _health;
+}
 
 sf::Color ColLerp(const sf::Color& c1, const  sf::Color& c2, float a) {
 	sf::Color ret = sf::Color::White;
@@ -49,17 +54,18 @@ sf::Color ColLerp(const sf::Color& c1, const  sf::Color& c2, float a) {
 void HealthComponent::render()
 {
 
-	auto healthPercent = _health / 100.0f;
+	auto healthPercent = _health / _originalHealth;
 	auto r = sf::Color::Red;
 	_rs.setFillColor(ColLerp(sf::Color::Red,sf::Color::Green,healthPercent));
 
 	_rs.setSize({32,8});
-	_rs.setPosition(_parent->getPosition() + Vector2f(0, -16.0f));
+	_rs.setPosition(_parent->getPosition() + Vector2f(-tileSizeHealth/DIVIDER, -tileSizeHealth/2));
 	Renderer::queue(&_rs);
 }
 
 
 HealthComponent::HealthComponent(Entity* p, float health_amount) : Component(p) {
 	_health = health_amount;
+	_originalHealth = health_amount;
 }
 

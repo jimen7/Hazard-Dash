@@ -108,27 +108,40 @@ void TestScene::Load() {
 	// Create player
 
 	for (int i = 0; i < heroes_num; i++) {
+
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::DOOR)[9]));
-		//auto s = player->addComponent<ShapeComponent>();
-		//s->setShape<sf::RectangleShape>(Vector2f(tileSize / 2.0f, tileSize * (3.0f / 4.0f)));
-		//s->getShape().setFillColor(Color::Magenta);
-		//s->getShape().setOrigin(tileSize / 4.0f, tileSize * (3.0f / 8.0f));
-
+		auto condition = player->addComponent<HealthComponent>(150.0f);
 		playerSpritesheet = make_shared<sf::Texture>();
 
-		playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png");
-		if (!playerSpritesheet->loadFromFile("res/Sprites/Esquire2.png")) {
+		auto s = player->addComponent<SpriteComponent>();
+
+
+		playerSpritesheet->loadFromFile("res/Sprites/CharacterSheet.png");
+		if (!playerSpritesheet->loadFromFile("res/Sprites/CharacterSheet.png")) {
 			cerr << "Failed to load spritesheet!" << std::endl;
 		}
-		auto s = player->addComponent<SpriteComponent>();
-		s->setTexure(playerSpritesheet);
+
+		if (condition->getHealth() == 50.0f) {
+			s->setTexure(playerSpritesheet);
+			s->setTextureRect(sf::IntRect(128, 224, 32, 32));
+		}
+		else if (condition->getHealth() == 100.0f) {
+			s->setTexure(playerSpritesheet);
+			s->setTextureRect(sf::IntRect(128, 0, 32, 32));
+		}
+		else if (condition->getHealth() == 150.0f) {
+			s->setTexure(playerSpritesheet);
+			s->setTextureRect(sf::IntRect(128, 128, 32, 32));
+		}
+
+
 		//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
-		s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+		//s->setTextureRect(sf::IntRect(96, 0, 32, 32));
 
 
 		player->addComponent<PlayerPhysicsComponent>(Vector2f(float(tileSize) / 2.0f, float(tileSize) * (3.0f / 4.0f)), doors);	//HOW IT WAS ORIGINALLY IMPLEMENTED
-		player->addComponent<HealthComponent>(100.0f);
+
 		player->addComponent<AIComponent>();
 		heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 												//we confirmed that the references are not deleted so that should not be causing an issue.
