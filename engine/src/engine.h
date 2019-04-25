@@ -11,6 +11,7 @@
 #define GAMEX 1920
 #define GAMEY 1080
 #define DIVIDER 4.0f
+#define REBIND false;
 
 class Scene {
 public:
@@ -70,6 +71,10 @@ public:
 	static void setKeysss(std::map<std::string, MyKeys> test);
 	static MyKeys _key;
 	static std::map<std::string, MyKeys> _Keysss;
+	static void setXAxisValue(std::string s, sf::Joystick::Axis myJoysticAxis);
+	static void setXButtonValue(std::string s, int JoysticButtonNum);
+	static void setKeyboardbutton(std::string s, sf::Keyboard::Key myKeyCode);
+	static void setMouseButton(std::string s, sf::Mouse::Button myMouseButton);
 
 private:
   static Scene* _activeScene;

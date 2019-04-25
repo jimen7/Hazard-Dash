@@ -256,6 +256,7 @@ void TestScene::Update(const double& dt) {
 			t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 			if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+				if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
 					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
 					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Num1: Mine\nNum2: Spikes");
 				}
@@ -303,4 +304,5 @@ void TestScene::Update(const double& dt) {
 void TestScene::Render() {
 	ls::render(Engine::GetWindow());
 	Scene::Render();
+}
 }

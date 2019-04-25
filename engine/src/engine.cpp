@@ -8,8 +8,6 @@
 #include <iostream>
 #include <stdexcept>
 
-
-
 using namespace sf;
 using namespace std;
 Scene* Engine::_activeScene = nullptr;
@@ -34,6 +32,21 @@ std::map<std::string, Engine::MyKeys> Engine::getKeysss() {
 	return Engine::_Keysss;
 }
 
+void Engine::setXAxisValue(string s, sf::Joystick::Axis myJoysticAxis) {
+	_Keysss[s].myJoysticAxis = myJoysticAxis;
+}
+
+void Engine::setXButtonValue(std::string s, int JoysticButtonNum) {
+	_Keysss[s].JoysticButtonNum = JoysticButtonNum;
+}
+
+void Engine::setKeyboardbutton(std::string s, sf::Keyboard::Key myKeyCode) {
+	_Keysss[s].myKeyCode = myKeyCode;
+}
+
+void Engine::setMouseButton(std::string s, sf::Mouse::Button myMouseButton) {
+	_Keysss[s].myMouseButton = myMouseButton;
+}
 static bool TestEvent(Engine::MyKeys k, sf::Event e);
 
 
@@ -128,6 +141,12 @@ void Engine::Start(unsigned int width, unsigned int height,
   _key.JoysticButtonNum = 0;
   _Keysss["Jump"] = _key;
 
+  // Let's bind the Return key to the "Movement" action when using the controller
+  _key.myInputType = JoystickInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myJoysticAxis = sf::Joystick::Axis::X;
+  _Keysss["Movement"] = _key;
+
 
   // Let's bind the Left Control key to the "Left" action
   _key.myInputType = KeyboardInput;
@@ -154,10 +173,11 @@ void Engine::Start(unsigned int width, unsigned int height,
   _Keysss["Escape"] = _key;
 
   //Let's bind the Esc Control key to the "Escape" action
-  _key.myInputType = JoystickInput;
-  _key.myEventType = sf::Event::JoystickButtonPressed;
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
   _key.myJoysticAxis = sf::Joystick::PovY;
   _key.JoysticButtonNum = 7;
+  _key.myKeyCode = sf::Keyboard::P;
   _Keysss["Pause"] = _key;
 
 
@@ -178,7 +198,9 @@ void Engine::Start(unsigned int width, unsigned int height,
 		  window.close();
 	  }
 
-
+	 if (TestEvent(_Keysss["Pause"], event)) {
+		 gamePause = !gamePause;
+	 }
 
     }
 
@@ -199,9 +221,7 @@ void Engine::Start(unsigned int width, unsigned int height,
     //  window.close();
     //}
 
-	if (Keyboard::isKeyPressed(Keyboard::P)) {
-		gamePause = !gamePause;
-	}
+
 
     window.clear();
 

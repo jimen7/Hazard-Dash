@@ -109,7 +109,7 @@ void OptionsScene::Update(const double& dt) {
 		}
 	}
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtOptions > 0.2f) {
+	if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton) && dtOptions > 0.2f) {
 		dtOptions = 0.0f;
 		if (worldPos.x > 834.0f && worldPos.x < 1021.0f && worldPos.y > 417.0f && worldPos.y < 453.0f) {
 			const sf::Vector2u gamesize(GAMEX, GAMEY);
