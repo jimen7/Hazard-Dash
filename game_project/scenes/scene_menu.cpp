@@ -4,6 +4,7 @@
 #include "../game.h"
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 
 using namespace std;
@@ -16,7 +17,7 @@ shared_ptr<Entity> txt1;
 shared_ptr<Entity> txt2;
 shared_ptr<Entity> txt3;
 float dtMenu;
-
+sf::Music musicMenu;
 
 
 
@@ -24,6 +25,13 @@ float dtMenu;
 sf::Event Event;
 
 void MenuScene::Load() {
+
+	if (!musicMenu.openFromFile("res/Sounds/MainMenuMusic.wav")) {
+		throw("Music File does not exist.");
+	}
+	musicMenu.setLoop(true);
+	musicMenu.play();
+
 	dtMenu = 0.0f;
 	cout << "Menu Load \n";
 	{
@@ -81,6 +89,7 @@ void MenuScene::Update(const double& dt) {
 	if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton) && dtMenu > 0.2f) {
 		if (worldPos.x > 676.0f && worldPos.x < 1272.0f && worldPos.y > 278.0f && worldPos.y < 359.0f) {
 			Engine::ChangeScene(&testLevel);
+			musicMenu.stop();
 		}
 		else if (worldPos.x > 747.0f && worldPos.x < 1174.0f && worldPos.y > 466.0f && worldPos.y < 562.0f) {
 			Engine::ChangeScene(&optionsLevel);

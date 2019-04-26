@@ -98,6 +98,7 @@ void TestScene::Load() {
 			throw("Music File does not exist.");
 		}
 		music.setLoop(true);
+		music.setVolume(Engine::getVolume());
 		// float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;		//Original
 		//tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
 		Scene::Load();

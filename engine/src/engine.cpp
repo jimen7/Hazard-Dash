@@ -18,6 +18,7 @@ static float loadingspinner = 0.f;
 static float loadingTime;
 static RenderWindow* _window;
 bool Engine::_gamePause;
+float Engine::_volume;
 
 std::map<std::string, Engine::MyKeys>Engine::_Keysss;
 Engine::MyKeys Engine::_key;

@@ -50,6 +50,7 @@ public:
 	static sf::Vector2u getWindowSize();
 	static void setVsync(bool b);
 	static bool _gamePause;
+	
 
 
 	//MOUSE BINDING VARIABLES AND METHODS
@@ -81,12 +82,15 @@ public:
 	static void setMouseButton(std::string s, sf::Mouse::Button myMouseButton);
 	static bool getPause() { return _gamePause; }
 	static void setPause(bool gamePause) { _gamePause = gamePause; }
+	static void setVolume(float volume) { _volume = volume; }
+	static float getVolume() { return _volume; }
 
 private:
   static Scene* _activeScene;
   static std::string _gameName;
   static void Update();
   static void Render(sf::RenderWindow& window);
+  static float _volume;
 
   
 
