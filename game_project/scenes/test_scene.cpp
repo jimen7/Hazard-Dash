@@ -15,6 +15,8 @@
 #include <iostream>
 #include <thread>
 #include <random>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 using namespace sf;
@@ -66,386 +68,448 @@ int heroes_num = 10;
 bool gameplayPhase = false;
 float timerGame = 2.0f;
 float timerSpawn = 0.0f;
+shared_ptr<Entity> RoundStatus;
+int score = 0;
+int highscore = 0;
+int checkScore = 0;
+
 
 void TestScene::Load() {
-	if (!music.openFromFile("res/Sounds/Theme.wav")) {
-		throw("Music File does not exist.");
-	}
-	music.setLoop(true);
-	// float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;		//Original
-	//tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
-	Scene::Load();
-	tileSize = GAMEX / 64;
-	cout << " Scene 1 Load" << endl;
-	ls::loadLevelFile("res/main_level.txt", tileSize);
-	ls::loadLevelFile("res/tiled/Dungeon_final.csv", tileSize);
-
-	// PauseMenu stuff
-	texMenu = make_shared<sf::Texture>();
-	if (!texMenu->loadFromFile("res/Sprites/Menu_Pause.png"))
-	{
-		throw ("Can't load menu image.");
-	}
-	EntMenu = makeEntity2();
-	auto s = EntMenu->addComponent<SpriteComponent>();
-	s->setTexure(texMenu);
-	EntMenu->setPosition(sf::Vector2f(320, 180));
-
-	auto t1 = EntMenu->addComponent<TextComponent>("Resume");
-	auto t2 = EntMenu->addComponent<TextComponent>("Restart");
-	auto t3 = EntMenu->addComponent<TextComponent>("Main Menu");
-	auto t4 = EntMenu->addComponent<TextComponent>("Exit Game");
-
-	for (int i = 0; i < 4; i++) {
-		EntMenu->GetCompatibleComponent<TextComponent>()[i]->setSize(100);
-	}
-
-	t1->setPosition(sf::Vector2f(760, 220));
-	t2->setPosition(sf::Vector2f(730, 360));
-	t3->setPosition(sf::Vector2f(670, 500));
-	t4->setPosition(sf::Vector2f(670, 640));
-
-
-	// Sorting the door tiles so the player goes through them sequentially
-	doors = ls::findTiles(ls::DOOR);
-	ls::sortTiles(doors);
-
-	// Sort the teleports
-	auto teleports = ls::findTiles(ls::TELEPORT);
-	ls::sortTiles(teleports);
-
-
-	auto ho = GAMEY - (ls::getHeight() * tileSize);
-	ls::setOffset(Vector2f(0, ho));
-
-
-	music.play();
-
-	//  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to point to our hero list
-	// Add physics colliders to level tiles.
-	{
-		auto walls = ls::findTiles(ls::WALL);
-		auto ground = ls::findTiles(ls::GROUND);
-		auto traps = ls::findTiles(ls::TRAP);
-		walls.insert(walls.end(), ground.begin(), ground.end());
-		for (auto w : walls) {
-			auto pos = ls::getTilePosition(w);
-			pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+	//Read in the highscore text
+	ifstream myfile("highscore.txt");
+	if (!myfile.is_open()) {
+		ofstream myfile2("highscore.txt");
+		if (myfile2.is_open())
+		{
+			myfile2 << "0";
 		}
-		for (auto t : traps) {
-			auto pos = ls::getTilePosition(t);
-			pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
+		myfile2.close();
+	}
+	else {
+		string line;
+		while (getline(myfile, line))
+		{
+			highscore = std::stoi(line);
+		}
+		myfile.close();
+	}
 
-			trapSpritesheet = make_shared<sf::Texture>();
+		if (!music.openFromFile("res/Sounds/Theme.wav")) {
+			throw("Music File does not exist.");
+		}
+		music.setLoop(true);
+		// float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;		//Original
+		//tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
+		Scene::Load();
+		tileSize = GAMEX / 64;
+		cout << " Scene 1 Load" << endl;
+		ls::loadLevelFile("res/main_level.txt", tileSize);
+		ls::loadLevelFile("res/tiled/Dungeon_final.csv", tileSize);
 
-			trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png");
-			if (!trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {
-				cerr << "Failed to load spritesheet!" << std::endl;
+		// PauseMenu stuff
+		texMenu = make_shared<sf::Texture>();
+		if (!texMenu->loadFromFile("res/Sprites/Menu_Pause.png"))
+		{
+			throw ("Can't load menu image.");
+		}
+		EntMenu = makeEntity2();
+		RoundStatus = makeEntity();
+		auto s = EntMenu->addComponent<SpriteComponent>();
+		s->setTexure(texMenu);
+		EntMenu->setPosition(sf::Vector2f(320, 180));
+
+		auto t1 = EntMenu->addComponent<TextComponent>("Resume");
+		auto t2 = EntMenu->addComponent<TextComponent>("Restart");
+		auto t3 = EntMenu->addComponent<TextComponent>("Main Menu");
+		auto t4 = EntMenu->addComponent<TextComponent>("Exit Game");
+		auto t5 = RoundStatus->addComponent<TextComponent>("Round: " + to_string(roundNo) + ", Score: " + to_string(score));
+
+		for (int i = 0; i < 4; i++) {
+			EntMenu->GetCompatibleComponent<TextComponent>()[i]->setSize(100);
+		}
+
+		t1->setPosition(sf::Vector2f(760, 220));
+		t2->setPosition(sf::Vector2f(730, 360));
+		t3->setPosition(sf::Vector2f(670, 500));
+		t4->setPosition(sf::Vector2f(670, 640));
+		t5->setSize(50.0f);
+		t5->setColour(Color::Black);
+		t5->setPosition(sf::Vector2f(100, 30));
+
+
+		// Sorting the door tiles so the player goes through them sequentially
+		doors = ls::findTiles(ls::DOOR);
+		ls::sortTiles(doors);
+
+		// Sort the teleports
+		auto teleports = ls::findTiles(ls::TELEPORT);
+		ls::sortTiles(teleports);
+
+
+		auto ho = GAMEY - (ls::getHeight() * tileSize);
+		ls::setOffset(Vector2f(0, ho));
+
+
+		music.play();
+
+		//  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to point to our hero list
+		// Add physics colliders to level tiles.
+		{
+			auto walls = ls::findTiles(ls::WALL);
+			auto ground = ls::findTiles(ls::GROUND);
+			auto traps = ls::findTiles(ls::TRAP);
+			walls.insert(walls.end(), ground.begin(), ground.end());
+			for (auto w : walls) {
+				auto pos = ls::getTilePosition(w);
+				pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 			}
-			auto s = e->addComponent<SpriteComponent>();
-			s->setTexure(trapSpritesheet);
-			s->setTextureRect(sf::IntRect(0, 128, 32, 32));
+			for (auto t : traps) {
+				auto pos = ls::getTilePosition(t);
+				pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+
+				trapSpritesheet = make_shared<sf::Texture>();
+
+				trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png");
+				if (!trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {
+					cerr << "Failed to load spritesheet!" << std::endl;
+				}
+				auto s = e->addComponent<SpriteComponent>();
+				s->setTexure(trapSpritesheet);
+				s->setTextureRect(sf::IntRect(0, 128, 32, 32));
 
 
-			//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-			e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
-			e->addComponent<TextComponent>("Empty");
-			e->GetCompatibleComponent<TextComponent>()[0]->setPosition(e->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
-			e->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
+				//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+				e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
+				e->addComponent<TextComponent>("Empty");
+				e->GetCompatibleComponent<TextComponent>()[0]->setPosition(e->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
+				e->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 
-			entityTrapsList.push_back(e);
-		}
-	}
-
-	// Sorting the door tiles so the player goes through them sequentially
-	{
-		for (int i = 0; i < doors.size(); i++) {
-			auto pos = ls::getTilePosition(doors[i]);
-			pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			if (i % 2 == 1 && i != doors.size() - 1)
-				e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[i + 1]));
-			else
-				e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize));
-			e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-			ls::setColor(LevelSystem::TRAP, Color::Magenta);
-
-		}
-	}
-
-	// Sorting the teleport tiles
-	{
-		srand(time(0));
-		bool first = rand() & 1;
-		cout << first << endl;
-		for (int i = 0; i < teleports.size(); i++) {
-			auto pos = ls::getTilePosition(teleports[i]);
-			pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER);
-			auto e = makeEntity();
-			e->setPosition(pos);
-			if (i == 0 && first) {
-				e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(teleports[2]));
+				entityTrapsList.push_back(e);
 			}
-			else if (i == 0) {
-				e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[0]));
-			}
-			else if (i == 1 && !first) {
-				e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(teleports[2]));
-			}
-			else if (i == 1) {
-				e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[0]));
-			}
-			e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 		}
+
+		// Sorting the door tiles so the player goes through them sequentially
+		{
+			for (int i = 0; i < doors.size(); i++) {
+				auto pos = ls::getTilePosition(doors[i]);
+				pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				if (i % 2 == 1 && i != doors.size() - 1)
+					e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[i + 1]));
+				else
+					e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize));
+				e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+				ls::setColor(LevelSystem::TRAP, Color::Magenta);
+
+			}
+		}
+
+		// Sorting the teleport tiles
+		{
+			srand(time(0));
+			bool first = rand() & 1;
+			cout << first << endl;
+			for (int i = 0; i < teleports.size(); i++) {
+				auto pos = ls::getTilePosition(teleports[i]);
+				pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER);
+				auto e = makeEntity();
+				e->setPosition(pos);
+				if (i == 0 && first) {
+					e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(teleports[2]));
+				}
+				else if (i == 0) {
+					e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[0]));
+				}
+				else if (i == 1 && !first) {
+					e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(teleports[2]));
+				}
+				else if (i == 1) {
+					e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[0]));
+				}
+				e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+			}
+		}
+
+
+
+
+		cout << " Scene 1 Load Done" << endl;
+
+		setLoaded(true);
 	}
 
-
-
-
-	cout << " Scene 1 Load Done" << endl;
-
-	setLoaded(true);
-}
-
-void TestScene::UnLoad() {
-	cout << "Scene 1 Unload" << endl;
-	heroes.clear();
-	entityTrapsList.clear();
-	player.reset();
-	ls::unload();
-	Scene::UnLoad();
-}
-
-void TestScene::Update(const double& dt) {
-
-	if (!tile_sorted) 	// Sorting the door tiles so the player goes through them sequentially
-	{
-		for (int i = 0; i < doors.size(); i++) {
-			auto pos = ls::getTilePosition(doors[i]);
-			pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			if (i % 2 == 1 && i != doors.size() - 1)
-				e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[i + 1]));
-			else
-				e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize));
-			e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-			ls::setColor(LevelSystem::TRAP, Color::Magenta);
-
-		}
-		tile_sorted = true;
+	void TestScene::UnLoad() {
+		cout << "Scene 1 Unload" << endl;
+		heroes.clear();
+		entityTrapsList.clear();
+		player.reset();
+		ls::unload();
+		Scene::UnLoad();
 	}
 
+	void TestScene::Update(const double& dt) {
 
+		if (!tile_sorted) 	// Sorting the door tiles so the player goes through them sequentially
+		{
+			for (int i = 0; i < doors.size(); i++) {
+				auto pos = ls::getTilePosition(doors[i]);
+				pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				if (i % 2 == 1 && i != doors.size() - 1)
+					e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize), ls::getTilePosition(doors[i + 1]));
+				else
+					e->addComponent<DoorComponent>(Vector2f(tileSize, tileSize));
+				e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+				ls::setColor(LevelSystem::TRAP, Color::Magenta);
 
-
-	dtPauseMenu += dt;
-	if (sf::Keyboard::isKeyPressed(Engine::_Keysss["Pause"].myKeyCode)) {
-		if (!Engine::getPause() && dtPauseMenu > 0.2f) {
-			dtPauseMenu = 0.0f;
-			Engine::setPause(true);
+			}
+			tile_sorted = true;
 		}
-		else if (Engine::getPause() && dtPauseMenu > 0.2f) {
-			dtPauseMenu = 0.0f;
-			Engine::setPause(false);
+
+
+
+
+		dtPauseMenu += dt;
+		if (sf::Keyboard::isKeyPressed(Engine::_Keysss["Pause"].myKeyCode)) {
+			if (!Engine::getPause() && dtPauseMenu > 0.2f) {
+				dtPauseMenu = 0.0f;
+				Engine::setPause(true);
+			}
+			else if (Engine::getPause() && dtPauseMenu > 0.2f) {
+				dtPauseMenu = 0.0f;
+				Engine::setPause(false);
+			}
 		}
-	}
-	// DO Pause Menueue stuff here
-	if (Engine::_gamePause) {
+		// DO Pause Menueue stuff here
+		if (Engine::_gamePause) {
+			// get the current mouse position in the window
+			const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+			// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+			const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+
+			if (worldPos.x > 771 && worldPos.x < 1117 && worldPos.y > 244 && worldPos.y < 331) {
+				EntMenu->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::Red);
+			}
+			else if (worldPos.x > 735 && worldPos.x < 1140 && worldPos.y > 390 && worldPos.y < 463) {
+				EntMenu->GetCompatibleComponent<TextComponent>()[1]->setColour(Color::Red);
+			}
+			else if (worldPos.x > 676 && worldPos.x < 1189 && worldPos.y > 526 && worldPos.y < 607) {
+				EntMenu->GetCompatibleComponent<TextComponent>()[2]->setColour(Color::Red);
+			}
+			else if (worldPos.x > 661 && worldPos.x < 1216 && worldPos.y > 666 && worldPos.y < 744) {
+				EntMenu->GetCompatibleComponent<TextComponent>()[3]->setColour(Color::Red);
+			}
+			else {
+				for (int i = 0; i < 4; i++) {
+					EntMenu->GetCompatibleComponent<TextComponent>()[i]->setColour(Color::White);
+				}
+			}
+
+			if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
+				if (worldPos.x > 771 && worldPos.x < 1117 && worldPos.y > 244 && worldPos.y < 331) {
+					Engine::setPause(false);
+				}
+				else if (worldPos.x > 735 && worldPos.x < 1140 && worldPos.y > 390 && worldPos.y < 463) {
+					Engine::ChangeScene(&menu);
+					Engine::ChangeScene(&testLevel);
+				}
+				else if (worldPos.x > 676 && worldPos.x < 1189 && worldPos.y > 526 && worldPos.y < 607) {
+					Engine::ChangeScene(&menu);
+					music.stop();
+				}
+				else if (worldPos.x > 661 && worldPos.x < 1216 && worldPos.y > 666 && worldPos.y < 744) {
+					Engine::GetWindow().close();
+				}
+			}
+		}
+		indexOfHeroesToRemove.clear();
+		Scene::Update(dt);
 		// get the current mouse position in the window
 		const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
 		// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
 		const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
 
-		if (worldPos.x > 771 && worldPos.x < 1117 && worldPos.y > 244 && worldPos.y < 331) {
-			EntMenu->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::Red);
-		}
-		else if (worldPos.x > 735 && worldPos.x < 1140 && worldPos.y > 390 && worldPos.y < 463) {
-			EntMenu->GetCompatibleComponent<TextComponent>()[1]->setColour(Color::Red);
-		}
-		else if (worldPos.x > 676 && worldPos.x < 1189 && worldPos.y > 526 && worldPos.y < 607) {
-			EntMenu->GetCompatibleComponent<TextComponent>()[2]->setColour(Color::Red);
-		}
-		else if (worldPos.x > 661 && worldPos.x < 1216 && worldPos.y > 666 && worldPos.y < 744) {
-			EntMenu->GetCompatibleComponent<TextComponent>()[3]->setColour(Color::Red);
-		}
-		else {
-			for (int i = 0; i < 4; i++) {
-				EntMenu->GetCompatibleComponent<TextComponent>()[i]->setColour(Color::White);
-			}
-		}
 
-		if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
-			if (worldPos.x > 771 && worldPos.x < 1117 && worldPos.y > 244 && worldPos.y < 331) {
-				Engine::setPause(false);
-			}
-			else if (worldPos.x > 735 && worldPos.x < 1140 && worldPos.y > 390 && worldPos.y < 463) {
-				// TODO
-			}
-			else if (worldPos.x > 676 && worldPos.x < 1189 && worldPos.y > 526 && worldPos.y < 607) {
-				Engine::ChangeScene(&menu);
-				music.stop();
-			}
-			else if (worldPos.x > 661 && worldPos.x < 1216 && worldPos.y > 666 && worldPos.y < 744) {
-				Engine::GetWindow().close();
+		if (!gameplayPhase && !Engine::_gamePause) {
+			timerGame -= dt;
+			if (timerGame < 0) {
+				timerGame = 100.0f + 10.0f * roundNo;
+				gameplayPhase = true;
+				heroes_num = 10 * roundNo;
+				checkScore = 0;
 			}
 		}
-	}
-	indexOfHeroesToRemove.clear();
-	Scene::Update(dt);
-	// get the current mouse position in the window
-	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
-	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
-	const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
+		else if (!Engine::_gamePause) {
+			timerGame -= dt;
+			timerSpawn += dt;
 
-
-	if (!gameplayPhase) {
-		timerGame -= dt;
-		if (timerGame < 0) {
-			timerGame = 60.0f + 5.0f * roundNo;
-			gameplayPhase = true;
-			heroes_num = 10 * roundNo;
-		}
-	}
-	else {
-		timerGame -= dt;
-		timerSpawn += dt;
-		if (timerSpawn > 1.0f && heroes_num > 0) {
-			timerSpawn = 0.0f;
-			cout << "Spawn" << endl;
-			SpawnHero(heroes_num % 3);
-			tile_sorted = false;
-			heroes_num--;
-		}
-		if (timerGame < 0) {
-			timerGame = 10.0f;
-			gameplayPhase = false;
+			int inc = 0;
 			for (auto h : heroes) {
-				h->setForDelete();
-				h->setAlive(false);
+				if (!h->isAlive())
+					inc++;
+				if (h->getPosition().y < 150) {
+					if (score > highscore) {
+						highscore = score;
+						ofstream myfile2("highscore.txt");
+						if (myfile2.is_open())
+						{
+							myfile2 << to_string(score);
+						}
+						myfile2.close();
+					}
+					RoundStatus->GetCompatibleComponent<TextComponent>()[0]->SetText("Game Over, Score: " + to_string(score) + ", HighScore: " + to_string(highscore));
+					timerGame = 100000;
+					//SaveScore();
+				}
+
 			}
-			heroes.clear();
+			//Check if score has changed
+			if (checkScore < inc) {
+				checkScore++;
+				score += 50;
+				RoundStatus->GetCompatibleComponent<TextComponent>()[0]->SetText("Round: " + to_string(roundNo) + ", Score: " + to_string(score));
+			}
+
+			if (inc == heroes.size() && inc > 9)
+				timerGame = -1;
+
+			if (timerSpawn > 1.0f && heroes_num > 0) {
+				timerSpawn = 0.0f;
+				SpawnHero(heroes_num % 3);
+				tile_sorted = false;
+				heroes_num--;
+			}
+			if (timerGame < 0) {
+				timerGame = 10.0f;
+				gameplayPhase = false;
+				for (auto h : heroes) {
+					h->setForDelete();
+					h->setAlive(false);
+				}
+				heroes.clear();
+				roundNo++;
+
+			}
 
 		}
 
-	}
 
-
-	for (int i = 0; i < heroes.size(); i++) {
-		if (heroes[i] == NULL) {
-			indexOfHeroesToRemove.push_back(i);
+		for (int i = 0; i < heroes.size(); i++) {
+			if (heroes[i] == NULL) {
+				indexOfHeroesToRemove.push_back(i);
+			}
 		}
-	}
 
-	for (int i = 0; i < indexOfHeroesToRemove.size(); i++) {
-		heroes.erase(heroes.begin() + i);
-	}
+		for (int i = 0; i < indexOfHeroesToRemove.size(); i++) {
+			heroes.erase(heroes.begin() + i);
+		}
 
 
-	for (auto t : entityTrapsList) {
-		// Set to 18 as its half of tilesize (32)
-		const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
-		const auto l = sf::length(dir);
-		if (l < 25.0) {
-			t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
-			if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
-				if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
-					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
-					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Num1: Mine\nNum2: Spikes");
+		for (auto t : entityTrapsList) {
+			// Set to 18 as its half of tilesize (32)
+			const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
+			const auto l = sf::length(dir);
+			if (l < 25.0) {
+				t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
+				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
+					if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
+						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Num1: Mine\nNum2: Spikes");
+					}
+
+					if (Keyboard::isKeyPressed(Keyboard::Num1)) {
+
+						t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+						t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
+						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Mine");
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
+					}
+
+					if (Keyboard::isKeyPressed(Keyboard::Num2)) {
+
+						t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+						t->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
+						t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+						t->GetCompatibleComponent<TextComponent>()[0]->SetText("Spikes");
+						t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
+					}
+				}
+				else {
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+						//t->del_components<TrapComponent>();
+					}
 				}
 
-				if (Keyboard::isKeyPressed(Keyboard::Num1)) {
-
-					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-					t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
-					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
-					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Mine");
-					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
-				}
-
-				if (Keyboard::isKeyPressed(Keyboard::Num2)) {
-
-					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-					t->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
-					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
-					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Spikes");
-					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
-				}
 			}
 			else {
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-					//t->del_components<TrapComponent>();
+				t->GetCompatibleComponent<TextComponent>()[0]->setSize(0);
+				if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Empty");
 				}
+
 			}
 
+
+		}
+
+
+
+	}
+
+	void TestScene::Render() {
+		ls::render(Engine::GetWindow());
+		Scene::Render();
+	}
+
+
+	void TestScene::SpawnHero(int i) {
+		player = makeEntity();
+		player->setPosition(ls::getTilePosition(ls::findTiles(ls::DOOR)[9]));
+		std::shared_ptr<HealthComponent> condition;
+		if (i == 0) {
+			condition = player->addComponent<HealthComponent>(50.0f);
+		}
+		else if (i == 1) {
+			condition = player->addComponent<HealthComponent>(100.0f);
 		}
 		else {
-			t->GetCompatibleComponent<TextComponent>()[0]->setSize(0);
-			if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
-				t->GetCompatibleComponent<TextComponent>()[0]->SetText("Empty");
-			}
+			condition = player->addComponent<HealthComponent>(150.0f);
+		}
+		playerSpritesheet = make_shared<sf::Texture>();
 
+		auto s = player->addComponent<SpriteComponent>();
+
+
+		playerSpritesheet->loadFromFile("res/Sprites/CharacterSheet.png");
+		if (!playerSpritesheet->loadFromFile("res/Sprites/CharacterSheet.png")) {
+			cerr << "Failed to load spritesheet!" << std::endl;
+		}
+
+		if (condition->getHealth() == 50.0f) {
+			s->setTexure(playerSpritesheet);
+			s->setTextureRect(sf::IntRect(128, 224, 32, 32));
+		}
+		else if (condition->getHealth() == 100.0f) {
+			s->setTexure(playerSpritesheet);
+			s->setTextureRect(sf::IntRect(128, 0, 32, 32));
+		}
+		else if (condition->getHealth() == 150.0f) {
+			s->setTexure(playerSpritesheet);
+			s->setTextureRect(sf::IntRect(128, 128, 32, 32));
 		}
 
 
+		player->addComponent<PlayerPhysicsComponent>(Vector2f(float(tileSize) / 2.0f, float(tileSize) * (3.0f / 4.0f)), doors);	//HOW IT WAS ORIGINALLY IMPLEMENTED
+
+		player->addComponent<AIComponent>();
+		heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
+												//we confirmed that the references are not deleted so that should not be causing an issue.
 	}
-
-
-
-}
-
-void TestScene::Render() {
-	ls::render(Engine::GetWindow());
-	Scene::Render();
-}
-
-
-void TestScene::SpawnHero(int i) {
-	player = makeEntity();
-	player->setPosition(ls::getTilePosition(ls::findTiles(ls::DOOR)[9]));
-	std::shared_ptr<HealthComponent> condition;
-	if (i == 0) {
-		condition = player->addComponent<HealthComponent>(50.0f);
-	}
-	else if (i == 1) {
-		condition = player->addComponent<HealthComponent>(100.0f);
-	}
-	else {
-		condition = player->addComponent<HealthComponent>(150.0f);
-	}
-	playerSpritesheet = make_shared<sf::Texture>();
-
-	auto s = player->addComponent<SpriteComponent>();
-
-
-	playerSpritesheet->loadFromFile("res/Sprites/CharacterSheet.png");
-	if (!playerSpritesheet->loadFromFile("res/Sprites/CharacterSheet.png")) {
-		cerr << "Failed to load spritesheet!" << std::endl;
-	}
-
-	if (condition->getHealth() == 50.0f) {
-		s->setTexure(playerSpritesheet);
-		s->setTextureRect(sf::IntRect(128, 224, 32, 32));
-	}
-	else if (condition->getHealth() == 100.0f) {
-		s->setTexure(playerSpritesheet);
-		s->setTextureRect(sf::IntRect(128, 0, 32, 32));
-	}
-	else if (condition->getHealth() == 150.0f) {
-		s->setTexure(playerSpritesheet);
-		s->setTextureRect(sf::IntRect(128, 128, 32, 32));
-	}
-
-
-	player->addComponent<PlayerPhysicsComponent>(Vector2f(float(tileSize) / 2.0f, float(tileSize) * (3.0f / 4.0f)), doors);	//HOW IT WAS ORIGINALLY IMPLEMENTED
-
-	player->addComponent<AIComponent>();
-	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
-											//we confirmed that the references are not deleted so that should not be causing an issue.
-}

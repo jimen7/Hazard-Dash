@@ -34,7 +34,7 @@ void HealthComponent::update(double dt)
 {
 		if (_health <= 0) {
 			_parent->setForDelete();
-			_isAlive = false;
+			_isAlive = false;			
 		}
 }
 
