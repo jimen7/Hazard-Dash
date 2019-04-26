@@ -68,6 +68,10 @@ float timerGame = 2.0f;
 float timerSpawn = 0.0f;
 
 void TestScene::Load() {
+	//sound effects
+
+
+
 	if (!music.openFromFile("res/Sounds/Theme.wav")) {
 		throw("Music File does not exist.");
 	}
@@ -356,8 +360,8 @@ void TestScene::Update(const double& dt) {
 			t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 			if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
 				if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
-					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
-					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Num1: Mine\nNum2: Spikes");
+					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / (DIVIDER), tileSize*1.4f));
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Num1: Mine\nNum2: Spikes\nNum3: Fireball Cannon");
 				}
 
 				if (Keyboard::isKeyPressed(Keyboard::Num1)) {

@@ -5,6 +5,9 @@
 #include <Box2D/Dynamics/b2Body.h>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <engine.h>
 
 
 class TrapComponent : public Component {
@@ -15,7 +18,8 @@ protected:
 	float _pushForce;
 	float _timer=0.0f;
 	bool _spikeActivated = false;
-
+	sf::SoundBuffer _buffer;
+	sf::Sound _sound;
 
 	int _trapType = 0;  //0 is deafult for testing(Spikes), 1 is OP spikes  for nopw 
 
@@ -72,10 +76,11 @@ public:
 
 class FireballClassComponent : public TrapComponent {
 private:
-	//
+	//shared_ptr<Entity> _fireball;
+	//shared_ptr<Entity> _fireball;
 
 public:
 	void TrapPlayer(Entity* e, sf::Vector2f direction) override;
-	explicit FireballClassComponent(Entity* p, const sf::Vector2f& size);
+	explicit FireballClassComponent(Entity* p, Entity* fireball, const sf::Vector2f& size);
 	void update(double dt) override;
 };

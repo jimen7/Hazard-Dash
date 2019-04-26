@@ -4,6 +4,8 @@
 #include "cmp_text.h"
 #include "system_renderer.h"
 #include "cmp_sprite.h"
+#include "../game.h"
+
 
 #include "system_physics.h"
 #include <LevelSystem.h>
@@ -69,6 +71,10 @@ void FireballClassComponent::update(double dt) {
 
 	}
 	else {
+
+		if (l < 25.0 && sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
+
+		}
 
 	}
 
@@ -143,7 +149,7 @@ void MineTrapComponent::update(double dt) {
 void TrapComponent::update(double dt)
 {
 
-
+	//Need these for the spikes as they only actvate when button is pressed
 	// get the current mouse position in the window
 	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
 	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
@@ -173,6 +179,11 @@ void TrapComponent::update(double dt)
 
 			if (_damage == 20) { //If spikes are actiovated move them over tile
 				if (l < 25.0 && sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {//Spikes only activate when pressed
+					if (!_buffer.loadFromFile("res/Sounds/Effects/Spikes.wav"))
+						throw("Spikes Music File does not exist.");
+
+					_sound.setBuffer(_buffer);
+					_sound.play();
 						_parent->setPosition(_parent->getPosition() + Vector2f(0, -tileSizeTEMP));
 						_spikeActivated = true;
 				}
@@ -247,11 +258,11 @@ TrapComponent::TrapComponent(Entity* p, const sf::Vector2f& size) : Component(p)
 
 void SpikeTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 {
-
 	e->setPosition(e->getPosition()+Vector2f(0,tileSizeTEMP));
 	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
 	e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
 	//sleep_for(std::chrono::seconds(2));
+
 	
 }
 
@@ -282,6 +293,13 @@ SpikeTrapComponent::SpikeTrapComponent(Entity* p, const sf::Vector2f& size) : Tr
 
 void MineTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 {
+
+	//Sound Effect
+	if (!_buffer.loadFromFile("res/Sounds/Effects/Mine.wav"))
+		throw("Spikes Music File does not exist.");
+
+	_sound.setBuffer(_buffer);
+	_sound.play();
 	//Sprites for explosion
 	auto s = _parent->GetCompatibleComponent<SpriteComponent>()[0];
 	_trapSpritesheet = std::make_shared<sf::Texture>();

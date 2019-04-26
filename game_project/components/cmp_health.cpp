@@ -23,6 +23,20 @@ float tileSizeHealth = GAMEX / 64;
 
 
 void HealthComponent::ReduceHealth(float amount) {
+	if (_originalHealth == 50) {
+		if (!_buffer.loadFromFile("res/Sounds/Effects/Grunt_Ninja.wav"))
+			throw("Ninja Hit Sound File does not exist.");
+	}
+	else if (_originalHealth == 100) {
+		if (!_buffer.loadFromFile("res/Sounds/Effects/Grunt_Knight.wav"))
+			throw("Ninja Hit Sound File does not exist.");
+	}
+	else if (_originalHealth == 150) {
+		if (!_buffer.loadFromFile("res/Sounds/Effects/Grunt_Berserker.wav"))
+			throw("Ninja Hit Sound File does not exist.");
+	}
+	_sound.setBuffer(_buffer);
+	_sound.play();
 	_health -= amount;
 	//cout << _health << endl;
 }
