@@ -15,6 +15,8 @@ protected:
 	float _pushForce;
 	float _timer=0.0f;
 	bool _spikeActivated = false;
+	bool _mineActivated = false;
+	float _mineTimer = 0.0f;
 
 	int _trapType = 0;  //0 is deafult for testing(Spikes), 1 is OP spikes  for nopw 
 
@@ -59,7 +61,7 @@ public:
 
 class MineTrapComponent : public TrapComponent {
 private:
-	//string description = "Mine";
+	//
 
 public:
 	void TrapPlayer(Entity* e, sf::Vector2f direction) override;

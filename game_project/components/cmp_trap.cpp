@@ -24,6 +24,8 @@ using namespace std::chrono; // nanoseconds, system_clock, seconds
 // tileSize;
 //Vector2f tilePos;
 
+bool mineRestored = true;
+bool original_sprite_restored = false;
 
 float tileSizeTEMP = GAMEX / 64;
 
@@ -59,9 +61,6 @@ void TrapComponent::update(double dt)
 	const auto dir = Vector2f(worldPos) - _parent->getPosition();//Gets mouse potition in relation to tile's
 	const auto l = sf::length(dir);
 
-	//cout << "Mouse Position:(" << mousePos << ")" << endl;
-	//cout << "Trap Position:(" << _parent->getPosition() << ")" << endl;
-
 
 	if (l<25.0) {
 			_trap_colour = _selected_trap_colour;	//Set the print colour tpo be highlighted
@@ -73,18 +72,67 @@ void TrapComponent::update(double dt)
 
 
 	if (_parent->GetCompatibleComponent<PhysicsComponent>().size() != 0) {		//Check if player has physics comp[onents. Physics Components are only added if it is an advanced trap, as player can walk through empty traps.
+		
+
+		if (_damage == 50) {	//To save up resourses only do the timer if trap is actually a mine
+			if (_mineTimer >= 0) { //Keep timer for mine if it's activated
+				_mineTimer -= dt;
+			}
+			else {
+				_mineActivated = false;	//Set trap to reactivate when time passes
+			}
+		}
+
+
 		if (_timer >= 0) {
 			_timer -= dt;
+			
 		}
 		else {
+			if (_mineActivated) {
+				if (!mineRestored) { //if mine has exploded, wait a second and restore the sprite
+					auto s = _parent->GetCompatibleComponent<SpriteComponent>()[0];
 
-			if (_damage == 20) {
+					_trapSpritesheet = std::make_shared<sf::Texture>();
+
+					_trapSpritesheet->loadFromFile("res/Sprites/traps/mine/mine_disabled.png");
+					if (!_trapSpritesheet->loadFromFile("res/Sprites/traps/mine/mine_disabled.png")) {
+						cerr << "Failed to load spritesheet!" << std::endl;
+					}
+					s->setTexure(_trapSpritesheet);
+					//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+					s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+					mineRestored = true;
+					//original_sprite_restored = false;
+				}
+			}
+			else {
+
+				if (!original_sprite_restored) {
+					auto s = _parent->GetCompatibleComponent<SpriteComponent>()[0];
+
+					_trapSpritesheet = std::make_shared<sf::Texture>();
+
+					_trapSpritesheet->loadFromFile("res/Sprites/traps/mine/mine_1_correct.png");
+					if (!_trapSpritesheet->loadFromFile("res/Sprites/traps/mine/mine_1_correct.png")) {
+						cerr << "Failed to load spritesheet!" << std::endl;
+					}
+					s->setTexure(_trapSpritesheet);
+					//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+					s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+					mineRestored = true;
+					original_sprite_restored = true;
+				}
+			}
+				
+
+			if (_damage == 20) { //If spikes are actiovated move them over tile
 				if (l < 25.0 && sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {//Spikes only activate when pressed
 						_parent->setPosition(_parent->getPosition() + Vector2f(0, -tileSizeTEMP));
 						_spikeActivated = true;
 				}
 			}
-			}
+		}
 
 			auto collidingObjects = _parent->GetCompatibleComponent<PhysicsComponent>()[0]->getTouching();//Gets any colliding objects with the trap, improved from checking against every hero
 
@@ -102,8 +150,19 @@ void TrapComponent::update(double dt)
 					other = e2;
 				}
 				const auto dir = other->getPosition() - _parent->getPosition();
-				if (_damage != 20) {//Check its not spikes
-					TrapPlayer(other, dir);
+				if (_damage != 20) {	//NORMALLOOPCheck its not spikes
+
+					if (_damage == 50) {	//Mines
+						if (!_mineActivated) {
+							TrapPlayer(other, dir);
+						}
+					}
+					else {
+						TrapPlayer(other, dir);
+					}
+
+					
+
 				}
 				else {
 					if (_spikeActivated) {
@@ -114,6 +173,8 @@ void TrapComponent::update(double dt)
 				}
 				auto a = 1;
 				_timer = 0.5;
+				if (_mineActivated)
+					_mineTimer = 2.0f;
 			}
 	}
 
@@ -188,9 +249,24 @@ SpikeTrapComponent::SpikeTrapComponent(Entity* p, const sf::Vector2f& size) : Tr
 
 void MineTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction)
 {
-	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);
+	//Sprites for explosion
+	auto s = _parent->GetCompatibleComponent<SpriteComponent>()[0];
+	_trapSpritesheet = std::make_shared<sf::Texture>();
+	_trapSpritesheet->loadFromFile("res/Sprites/traps/mine/explosion_3_3.png");
+	if (!_trapSpritesheet->loadFromFile("res/Sprites/traps/mine/explosion_3_3.png")) {
+		cerr << "Failed to load spritesheet!" << std::endl;
+	}
+	s->setTexure(_trapSpritesheet);
+	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+
+
+	//Push and reduce 50 health
 	e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) + 0.5f*direction);
 	e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
+	//set booleans for sprite restoration and mine cooldown
+	_mineActivated = true;
+	mineRestored = false;
+	original_sprite_restored = false;
 }
 
 MineTrapComponent::MineTrapComponent(Entity* p, const sf::Vector2f& size) : TrapComponent(p, size) {
