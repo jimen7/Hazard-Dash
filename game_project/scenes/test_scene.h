@@ -3,6 +3,8 @@
 #include "engine.h"
 
 class TestScene : public Scene {
+private:
+	void  SpawnHero(int i);
 public:
   void Load() override;
 
