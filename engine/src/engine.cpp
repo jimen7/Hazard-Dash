@@ -179,6 +179,37 @@ void Engine::Start(unsigned int width, unsigned int height,
   _key.myKeyCode = sf::Keyboard::P;
   _Keysss["Pause"] = _key;
 
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Num1;
+  _Keysss["Option 1"] = _key;
+
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Num2;
+  _Keysss["Option 2"] = _key;
+
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Num3;
+  _Keysss["Option 3"] = _key;
+
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Num4;
+  _Keysss["Option 4"] = _key;
+
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Num5;
+  _Keysss["Option 5"] = _key;
+
+  _key.myInputType = KeyboardInput;
+  _key.myEventType = sf::Event::KeyPressed;
+  _key.myKeyCode = sf::Keyboard::Num6;
+  _Keysss["Option 6"] = _key;
+
+
 
   while (window.isOpen()) {
     Event event;

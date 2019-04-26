@@ -74,13 +74,15 @@ public:
 	void update(double dt) override;
 };
 
-class FireballClassComponent : public TrapComponent {
+class FireballTrapComponent : public TrapComponent {
 private:
-	//shared_ptr<Entity> _fireball;
-	//shared_ptr<Entity> _fireball;
+	bool _test = false;
+	std::shared_ptr<Entity> _fireball;
+	int _rotation; //0 is Up, 1 is Down, 2 is Left, 3 is Right
+	bool _fired = false;
 
 public:
 	void TrapPlayer(Entity* e, sf::Vector2f direction) override;
-	explicit FireballClassComponent(Entity* p, Entity* fireball, const sf::Vector2f& size);
+	explicit FireballTrapComponent(Entity* p,  const sf::Vector2f& size, std::shared_ptr<Entity> fire, int rot);
 	void update(double dt) override;
 };

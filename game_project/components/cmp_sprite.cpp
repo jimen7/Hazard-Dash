@@ -19,6 +19,10 @@ void SpriteComponent::setTexure(std::shared_ptr<sf::Texture> tex)
 SpriteComponent::SpriteComponent(Entity* p)
     : Component(p), _sprite(make_shared<sf::Sprite>()) {}
 
+void SpriteComponent::rotateTexture(float rot) {
+	_sprite->setRotation(rot);
+}
+
 void SpriteComponent::update(double dt) {
   _sprite->setPosition(_parent->getPosition() + spriteOffset);
   _sprite->setRotation(_parent->getRotation());

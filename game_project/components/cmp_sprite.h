@@ -19,6 +19,7 @@ public:
 
   void setTextureRect(const sf::IntRect& rect);
   void setTexure(std::shared_ptr<sf::Texture> tex);
+  void rotateTexture(float rot);
 };
 
 class ShapeComponent : public Component {

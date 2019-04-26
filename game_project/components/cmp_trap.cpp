@@ -36,7 +36,7 @@ void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
 {
 	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
 	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);
-	e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
+	//e->GetCompatibleComponent<HealthComponent>()[0]->ReduceHealth(_damage);
 }
 
 
@@ -54,7 +54,7 @@ bool TrapComponent::isPlaced() {
 }
 
 
-void FireballClassComponent::update(double dt) {
+void FireballTrapComponent::update(double dt) {
 
 	//Calculate Mouse position as we need 
 
@@ -65,6 +65,9 @@ void FireballClassComponent::update(double dt) {
 	const auto dir = Vector2f(worldPos) - _parent->getPosition();//Gets mouse potition in relation to tile's
 	const auto l = sf::length(dir);
 
+	_fireball->setPosition(_parent->getPosition() + Vector2f(0, tileSizeTEMP * 2)); //HARDCODED FOR DEBUGGING, SHOULD BE RIGHT ABOVE IT
+	cout << "Trap Tile: " << _parent->getPosition() << endl;
+	cout << "Fireball: " << _fireball->getPosition() << endl;
 
 	if (_timer >= 0) {
 		_timer -= dt;
@@ -73,6 +76,22 @@ void FireballClassComponent::update(double dt) {
 	else {
 
 		if (l < 25.0 && sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
+			_fired = true;
+
+
+
+			if (_rotation == 0) { //Fireball UP
+				_fireball->setPosition(_parent->getPosition()+Vector2f(0.0f,tileSizeTEMP));
+			}
+			else if (_rotation == 1) { //Fireball DOWN
+				_fireball->setPosition(_parent->getPosition() + Vector2f(0.0f, -tileSizeTEMP));
+			}
+			else if (_rotation == 2) { //Fireball Left
+				_fireball->setPosition(_parent->getPosition() + Vector2f(-tileSizeTEMP, 0.0f));
+			}
+			else if (_rotation == 3) { //Fireball Right
+				_fireball->setPosition(_parent->getPosition() + Vector2f(tileSizeTEMP, 0.0f));
+			}
 
 		}
 
@@ -125,7 +144,7 @@ void MineTrapComponent::update(double dt) {
 			const auto dir = other->getPosition() - _parent->getPosition();
 			TrapPlayer(other, dir);
 			auto a = 1;
-			_timer = 2.0f;
+			_timer = 10.0f;
 			//cout << _timer << endl;
 		}
 
@@ -340,3 +359,40 @@ MineTrapComponent::MineTrapComponent(Entity* p, const sf::Vector2f& size) : Trap
 	_placed = true;
 	//p->addComponent<TrapComponent>(Vector2f(tileSizeTEMP, tileSizeTEMP));
 }
+
+void FireballTrapComponent::TrapPlayer(Entity* e, sf::Vector2f direction) {
+
+}
+
+FireballTrapComponent::FireballTrapComponent(Entity* p, const sf::Vector2f& size, std::shared_ptr<Entity> fire, int rot) : TrapComponent(p, size) {
+
+	auto s = _parent->GetCompatibleComponent<SpriteComponent>()[0];
+
+	_trapSpritesheet = std::make_shared<sf::Texture>();
+
+	if (!_trapSpritesheet->loadFromFile("res/Sprites/traps/canon.png")) {
+		cerr << "Failed to load spritesheet!" << std::endl;
+	}
+	s->setTexure(_trapSpritesheet);
+	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
+	
+
+	_damage = 40;
+	_fireball = fire;
+	_rotation = rot;
+
+	//_fireball->addComponent<PhysicsComponent>(true, Vector2f(tileSizeTEMP, tileSizeTEMP));
+	auto k = _fireball->addComponent<SpriteComponent>();
+
+	_trapSpritesheet = std::make_shared<sf::Texture>();
+
+	if (!_trapSpritesheet->loadFromFile("res/Sprites/traps/fireball/fireball_die_1_correct.png")) {
+		cerr << "Failed to load spritesheet!" << std::endl;
+	}
+
+	k->setTexure(_trapSpritesheet);
+	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
+	k->setTextureRect(sf::IntRect(0, 0, 32, 32));
+}
+

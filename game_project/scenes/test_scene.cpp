@@ -16,6 +16,8 @@
 #include <thread>
 #include <random>
 
+# define M_PI           3.14159265358979323846  /* pi */
+
 using namespace std;
 using namespace sf;
 
@@ -29,9 +31,15 @@ sf::Font font;
 shared_ptr<sf::Texture> texMenu;
 shared_ptr<Entity> EntMenu;
 
+//shared_ptr<Entity> fireball;
+
+bool key_pressed = false;
+
 static shared_ptr<Entity> player;
 
 float dtPauseMenu = 0.0f;
+
+float dtFireballChoice = 0.0f;
 
 int heroes_num_test = 5;
 std::vector<shared_ptr<Entity>> heroes;
@@ -50,7 +58,7 @@ std::vector<shared_ptr<Entity>> entityTrapsList;
 
 int trapNum = 0;
 
-
+shared_ptr<Entity> fireball;
 bool testtest = true;
 
 bool tile_sorted = false;
@@ -71,7 +79,7 @@ void TestScene::Load() {
 	//sound effects
 
 
-
+	fireball = makeEntity();
 	if (!music.openFromFile("res/Sounds/Theme.wav")) {
 		throw("Music File does not exist.");
 	}
@@ -144,17 +152,16 @@ void TestScene::Load() {
 			pos += Vector2f(tileSize / DIVIDER, tileSize / DIVIDER); //offset to center
 			auto e = makeEntity();
 			e->setPosition(pos);
-
 			trapSpritesheet = make_shared<sf::Texture>();
 
 			trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png");
-			if (!trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {
+			if (!trapSpritesheet->loadFromFile("res/Sprites/Esquire3.png")) {	//This is just an empty sprite, but in order to change it a default one needs to be set
 				cerr << "Failed to load spritesheet!" << std::endl;
 			}
 			auto s = e->addComponent<SpriteComponent>();
 			s->setTexure(trapSpritesheet);
 			s->setTextureRect(sf::IntRect(0, 128, 32, 32));
-
+			s->rotateTexture(90.0f);
 
 			//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 			e->addComponent<TrapComponent>(Vector2f(tileSize, tileSize));
@@ -248,7 +255,7 @@ void TestScene::Update(const double& dt) {
 
 
 
-
+	dtFireballChoice += dt;
 	dtPauseMenu += dt;
 	if (sf::Keyboard::isKeyPressed(Engine::_Keysss["Pause"].myKeyCode)) {
 		if (!Engine::getPause() && dtPauseMenu > 0.2f) {
@@ -351,7 +358,7 @@ void TestScene::Update(const double& dt) {
 		heroes.erase(heroes.begin() + i);
 	}
 
-
+	cout << "Test Scene Fireball: " << fireball->getPosition() << endl;
 	for (auto t : entityTrapsList) {
 		// Set to 18 as its half of tilesize (32)
 		const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
@@ -360,12 +367,12 @@ void TestScene::Update(const double& dt) {
 			t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 			if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
 				if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
-					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / (DIVIDER), tileSize*1.4f));
-					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Num1: Mine\nNum2: Spikes\nNum3: Fireball Cannon");
+					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / (DIVIDER), tileSize*2.0f));
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("1: Mine\n2: Spikes\n3: Fireball Cannon Up\n4Fireball Cannon Down\n5Fireball Cannon Left\n6Fireball Cannon Right\n");
 				}
 
-				if (Keyboard::isKeyPressed(Keyboard::Num1)) {
-
+				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 1"].myKeyCode)) {
+					
 					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 					t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
 					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
@@ -373,14 +380,64 @@ void TestScene::Update(const double& dt) {
 					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
 				}
 
-				if (Keyboard::isKeyPressed(Keyboard::Num2)) {
-
+				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 2"].myKeyCode)) {
 					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 					t->addComponent<SpikeTrapComponent>(Vector2f(tileSize, tileSize));
 					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Spikes");
 					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
 				}
+
+				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 3"].myKeyCode)) {
+					fireball = makeEntity();
+					fireball->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), (fireball), 0);
+					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Up");
+					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
+				}
+
+				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 4"].myKeyCode)) {
+
+					//Fireball Entity Creation
+					fireball = makeEntity();
+					fireball->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize)); //True because fireball will be moving
+
+
+					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), (fireball),1 );
+					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Down");
+					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
+				}
+
+				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 5"].myKeyCode)) {
+
+
+					auto fireball = makeEntity();
+					fireball->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize));
+					//fireball->setPosition(t->getPosition()+Vector2f(0,tileSize));
+					//fireball->addComponent<SpriteComponent>();
+
+					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), (fireball),2);
+					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Left");
+					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
+				}
+
+				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 6"].myKeyCode)) {
+					auto fireball = makeEntity();
+					fireball->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize));
+					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), (fireball),3);
+					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Right");
+					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
+				}
+
+
 			}
 			else {
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
