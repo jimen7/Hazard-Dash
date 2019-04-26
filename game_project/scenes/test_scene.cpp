@@ -9,6 +9,7 @@
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_health.h"
 #include "../components/cmp_AI.h"
+#include "../components/cmp_text.h"
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
@@ -24,11 +25,18 @@ using namespace sf;
 std::vector<sf::Text> trapDescriptions;
 sf::Text textDes;
 sf::Font font;
+//PauseMenu Stuff
+shared_ptr<sf::Texture> texMenu;
+shared_ptr<Entity> EntMenu;
 
 static shared_ptr<Entity> player;
 
+float dtPauseMenu = 0.0f;
+
 int heroes_num = 5;
 std::vector<shared_ptr<Entity>> heroes;
+// Text components for pause menu
+std::shared_ptr<Entity> menuPause;
 
 std::vector<int> indexOfHeroesToRemove;
 
@@ -58,6 +66,32 @@ void TestScene::Load() {
 	cout << " Scene 1 Load" << endl;
 	ls::loadLevelFile("res/main_level.txt", tileSize);
 	ls::loadLevelFile("res/tiled/Dungeon_final.csv", tileSize);
+	
+	// PauseMenu stuff
+	texMenu = make_shared<sf::Texture>();
+	if (!texMenu->loadFromFile("res/Sprites/Menu_Pause.png"))
+	{
+		throw ("Can't load menu image.");
+	}
+	EntMenu = makeEntity2();
+	auto s = EntMenu->addComponent<SpriteComponent>();
+	s->setTexure(texMenu);
+	EntMenu->setPosition(sf::Vector2f(320, 180));
+
+	auto t1 = EntMenu->addComponent<TextComponent>("Resume");
+	auto t2 = EntMenu->addComponent<TextComponent>("Restart");
+	auto t3 = EntMenu->addComponent<TextComponent>("Main Menu");
+	auto t4 = EntMenu->addComponent<TextComponent>("Exit Game");
+
+	for (int i = 0; i < 4; i++) {
+		EntMenu->GetCompatibleComponent<TextComponent>()[i]->setSize(100);
+	}
+
+	t1->setPosition(sf::Vector2f(760, 220));
+	t2->setPosition(sf::Vector2f(730, 360));
+	t3->setPosition(sf::Vector2f(670, 500));
+	t4->setPosition(sf::Vector2f(670, 640));
+
 
 	// Sorting the door tiles so the player goes through them sequentially
 	auto doors = ls::findTiles(ls::DOOR);
@@ -144,9 +178,7 @@ void TestScene::Load() {
 			}
 			auto s = e->addComponent<SpriteComponent>();
 			s->setTexure(trapSpritesheet);
-			//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
 			s->setTextureRect(sf::IntRect(0, 128, 32, 32));
-			//s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 
 
 			//e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
@@ -237,12 +269,58 @@ void TestScene::UnLoad() {
 }
 
 void TestScene::Update(const double& dt) {
-	//  if (ls::getTileAt(player->getPosition()) == ls::END) {
-	//    Engine::ChangeScene((Scene*)&level2);
-	//  }
+	dtPauseMenu += dt;
+	if (sf::Keyboard::isKeyPressed(Engine::_Keysss["Pause"].myKeyCode)) {
+		if (!Engine::getPause() && dtPauseMenu > 0.2f) {
+			dtPauseMenu = 0.0f;
+			Engine::setPause(true);
+		}
+		else if (Engine::getPause() && dtPauseMenu > 0.2f) {
+			dtPauseMenu = 0.0f;
+			Engine::setPause(false);
+		}
+	}
+	// DO Pause Menueue stuff here
+	if (Engine::_gamePause) {
+		// get the current mouse position in the window
+		const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
+		// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
+		const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
 
+		if (worldPos.x > 771 && worldPos.x < 1117 && worldPos.y > 244 && worldPos.y < 331) {
+			EntMenu->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::Red);
+		}
+		else if (worldPos.x > 735 && worldPos.x < 1140 && worldPos.y > 390 && worldPos.y < 463) {
+			EntMenu->GetCompatibleComponent<TextComponent>()[1]->setColour(Color::Red);
+		}
+		else if (worldPos.x > 676 && worldPos.x < 1189 && worldPos.y > 526 && worldPos.y < 607) {
+			EntMenu->GetCompatibleComponent<TextComponent>()[2]->setColour(Color::Red);
+		}
+		else if (worldPos.x > 661 && worldPos.x < 1216 && worldPos.y > 666 && worldPos.y < 744) {
+			EntMenu->GetCompatibleComponent<TextComponent>()[3]->setColour(Color::Red);
+		}
+		else {
+			for (int i = 0; i < 4; i++) {
+				EntMenu->GetCompatibleComponent<TextComponent>()[i]->setColour(Color::White);
+			}
+		}
 
-		//player->GetCompatibleComponent<PhysicsComponent>()[0]->setRestitution(1.f);
+		if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
+			if (worldPos.x > 771 && worldPos.x < 1117 && worldPos.y > 244 && worldPos.y < 331) {
+				Engine::setPause(false);
+			}
+			else if (worldPos.x > 735 && worldPos.x < 1140 && worldPos.y > 390 && worldPos.y < 463) {
+				// TODO
+			}
+			else if (worldPos.x > 676 && worldPos.x < 1189 && worldPos.y > 526 && worldPos.y < 607) {
+				Engine::ChangeScene(&menu);
+				music.stop();
+			}
+			else if (worldPos.x > 661 && worldPos.x < 1216 && worldPos.y > 666 && worldPos.y < 744) {
+				Engine::GetWindow().close();
+			}
+		}
+	}
 	indexOfHeroesToRemove.clear();
 	Scene::Update(dt);
 	// get the current mouse position in the window

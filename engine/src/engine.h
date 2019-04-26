@@ -26,8 +26,11 @@ public:
 	  const sf::Vector2u& gamesize);
   bool isLoaded() const;
   std::shared_ptr<Entity> makeEntity();
+  // For the pause menu
+  std::shared_ptr<Entity> makeEntity2();
 
   EntityManager ents;
+  EntityManager ents2;
 
 protected:
   void setLoaded(bool);
@@ -46,6 +49,7 @@ public:
 	static sf::RenderWindow& GetWindow();
 	static sf::Vector2u getWindowSize();
 	static void setVsync(bool b);
+	static bool _gamePause;
 
 
 	//MOUSE BINDING VARIABLES AND METHODS
@@ -75,6 +79,8 @@ public:
 	static void setXButtonValue(std::string s, int JoysticButtonNum);
 	static void setKeyboardbutton(std::string s, sf::Keyboard::Key myKeyCode);
 	static void setMouseButton(std::string s, sf::Mouse::Button myMouseButton);
+	static bool getPause() { return _gamePause; }
+	static void setPause(bool gamePause) { _gamePause = gamePause; }
 
 private:
   static Scene* _activeScene;

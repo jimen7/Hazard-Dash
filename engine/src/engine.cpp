@@ -17,11 +17,10 @@ static bool loading = false;
 static float loadingspinner = 0.f;
 static float loadingTime;
 static RenderWindow* _window;
+bool Engine::_gamePause;
 
 std::map<std::string, Engine::MyKeys>Engine::_Keysss;
 Engine::MyKeys Engine::_key;
-
-bool gamePause = false;
 
 
 void Engine::setKeysss(std::map<std::string, MyKeys> test) {
@@ -195,11 +194,11 @@ void Engine::Start(unsigned int width, unsigned int height,
  	 if (TestEvent(_Keysss["Escape"], event))
 	  {
 		  // You can use a function
-		  window.close();
+		  //window.close();
 	  }
 
 	 if (TestEvent(_Keysss["Pause"], event)) {
-		 gamePause = !gamePause;
+		 //gamePause = !gamePause;
 	 }
 
     }
@@ -225,9 +224,9 @@ void Engine::Start(unsigned int width, unsigned int height,
 
     window.clear();
 
-	if (!gamePause) {
+	//if (!_gamePause) {
 		Update();
-	}
+	//}
 
 
     Render(window);
@@ -268,6 +267,12 @@ std::shared_ptr<Entity> Scene::makeEntity() {
   auto e = make_shared<Entity>(this);
   ents.list.push_back(e);
   return std::move(e);
+}
+
+std::shared_ptr<Entity> Scene::makeEntity2() {
+	auto e = make_shared<Entity>(this);
+	ents2.list.push_back(e);
+	return std::move(e);
 }
 
 void Engine::setVsync(bool b) { _window->setVerticalSyncEnabled(b); }
@@ -345,9 +350,17 @@ sf::FloatRect Scene::CalculateViewport(const sf::Vector2u& screensize,
 	return sf::FloatRect(0, 0, widthPercent, heightPercent);
 }
 
-void Scene::Update(const double& dt) { if (!gamePause) { ents.update(dt); } }
+void Scene::Update(const double& dt) { 
+	if (!Engine::getPause()) { ents.update(dt); }
+	else 
+		ents2.update(dt);
+}
 
-void Scene::Render() { ents.render(); }
+void Scene::Render() { 
+	ents.render();
+	if (Engine::getPause())
+		ents2.render();
+}
 
 bool Scene::isLoaded() const {
   {
@@ -373,10 +386,12 @@ void Scene::setLoaded(bool b) {
 
 void Scene::UnLoad() {
   ents.list.clear();
+  ents2.list.clear();
   setLoaded(false);
 }
 
 void Scene::Load() {
+	Engine::setPause(false);
 	const sf::Vector2u gamesize(GAMEX, GAMEY);
 	//set View as normal
 	//Engine::GetWindow().setSize(screensize);
