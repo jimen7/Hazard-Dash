@@ -15,8 +15,7 @@ protected:
 	float _pushForce;
 	float _timer=0.0f;
 	bool _spikeActivated = false;
-	bool _mineActivated = false;
-	float _mineTimer = 0.0f;
+
 
 	int _trapType = 0;  //0 is deafult for testing(Spikes), 1 is OP spikes  for nopw 
 
@@ -61,10 +60,22 @@ public:
 
 class MineTrapComponent : public TrapComponent {
 private:
-	//
+	bool _mineSpriteRestored = true;	//Boolean to check if sprite has been restored for the mine after the cooldown
+	bool _mineOnCooldown = false;
+	float _mineTimer = 0.0f;
 
 public:
 	void TrapPlayer(Entity* e, sf::Vector2f direction) override;
 	explicit MineTrapComponent(Entity* p, const sf::Vector2f& size);
+	void update(double dt) override;
+};
 
+class FireballClassComponent : public TrapComponent {
+private:
+	//
+
+public:
+	void TrapPlayer(Entity* e, sf::Vector2f direction) override;
+	explicit FireballClassComponent(Entity* p, const sf::Vector2f& size);
+	void update(double dt) override;
 };
