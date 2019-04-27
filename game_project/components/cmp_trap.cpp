@@ -23,19 +23,17 @@ using namespace Physics;
 using namespace std::this_thread; // sleep_for, sleep_until
 using namespace std::chrono; // nanoseconds, system_clock, seconds
 
-float fireball_speed = 300.0f;
+float fireball_speed = 300.0f;	//Fireball speed
 
 
 std::vector<std::shared_ptr<Entity>> FireballTrapComponent::heroes_list;;
 
-// tileSize;
-//Vector2f tilePos;
 
 
 
-float tileSizeTEMP = GAMEX / 64;
+float tileSizeTEMP = GAMEX / 64;	//Tile SIze in game
 
-void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)
+void TrapComponent::TrapPlayer(Entity * e, sf::Vector2f direction)	//does nothing
 {
 	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(Vector2f(0.0f, _pushForce) - 1.0f*direction);
 	//e->GetCompatibleComponent<PhysicsComponent>()[0]->impulse(_pushForce*direction);

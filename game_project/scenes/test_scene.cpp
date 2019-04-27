@@ -45,7 +45,7 @@ float dtPauseMenu = 0.0f;
 
 
 int heroes_num_test = 5;
-std::vector<std::shared_ptr<Entity>> TestScene::heroes;
+std::vector<std::shared_ptr<Entity>> TestScene::heroes;	//Static Variable declare in header, we need it to be static cause heroes are changfed in the fireball trap component
 // Text components for pause menu
 std::shared_ptr<Entity> menuPause;
 
