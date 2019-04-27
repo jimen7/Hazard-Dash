@@ -6,6 +6,7 @@ class TestScene : public Scene {
 private:
 	void  SpawnHero(int i);
 public:
+	static std::vector<std::shared_ptr<Entity>> heroes;
   void Load() override;
 
   void UnLoad() override;

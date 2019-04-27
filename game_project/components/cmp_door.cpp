@@ -35,7 +35,9 @@ void DoorComponent::update(double dt)
 
 			other->GetCompatibleComponent<PhysicsComponent>()[0]->teleport(_nextDoor);
 			if (_nextDoor == sf::Vector2f(1860, 960)) {
-				other->GetCompatibleComponent<AIComponent>()[0]->setSwitch();
+				if (other->GetCompatibleComponent<AIComponent>().size() != 0) {
+					other->GetCompatibleComponent<AIComponent>()[0]->setSwitch();
+				}
 			}
 			auto s = 1;
 		}

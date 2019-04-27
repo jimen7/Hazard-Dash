@@ -23,6 +23,8 @@ using namespace sf;
 
 //float tileSize;
 
+bool xboxPlayer=false;
+
 
 std::vector<sf::Text> trapDescriptions;
 sf::Text textDes;
@@ -42,11 +44,11 @@ float dtPauseMenu = 0.0f;
 float dtFireballChoice = 0.0f;
 
 int heroes_num_test = 5;
-std::vector<shared_ptr<Entity>> heroes;
+std::vector<std::shared_ptr<Entity>> TestScene::heroes;
 // Text components for pause menu
 std::shared_ptr<Entity> menuPause;
 
-std::vector<int> indexOfHeroesToRemove;
+std::vector<int> indexOfheroesToRemove;
 
 shared_ptr<sf::Texture> playerSpritesheet;
 
@@ -133,7 +135,7 @@ void TestScene::Load() {
 
 	music.play();
 
-	//  TrapComponent::heroes_list = &heroes;		//Set the list of pointers to point to our hero list
+	//  TrapComponent::TestScene::heroes_list = &TestScene::heroes;		//Set the list of pointers to point to our hero list
 	  // Add physics colliders to level tiles.
 	{
 		auto walls = ls::findTiles(ls::WALL);
@@ -226,7 +228,7 @@ void TestScene::Load() {
 
 void TestScene::UnLoad() {
 	cout << "Scene 1 Unload" << endl;
-	heroes.clear();
+	TestScene::heroes.clear();
 	entityTrapsList.clear();
 	player.reset();
 	ls::unload();
@@ -234,6 +236,10 @@ void TestScene::UnLoad() {
 }
 
 void TestScene::Update(const double& dt) {
+
+	if (sf::Joystick::isButtonPressed(0, 7)) {
+		xboxPlayer = true;
+	}
 
 	if (!tile_sorted) 	// Sorting the door tiles so the player goes through them sequentially
 	{
@@ -308,7 +314,7 @@ void TestScene::Update(const double& dt) {
 			}
 		}
 	}
-	indexOfHeroesToRemove.clear();
+	indexOfheroesToRemove.clear();
 	Scene::Update(dt);
 	// get the current mouse position in the window
 	const sf::Vector2i pixelPos = sf::Mouse::getPosition(Engine::GetWindow());
@@ -341,24 +347,24 @@ void TestScene::Update(const double& dt) {
 				h->setForDelete();
 				h->setAlive(false);
 			}
-			heroes.clear();
+			TestScene::heroes.clear();
 
 		}
 
 	}
 
 
-	for (int i = 0; i < heroes.size(); i++) {
-		if (heroes[i] == NULL) {
-			indexOfHeroesToRemove.push_back(i);
+	for (int i = 0; i < TestScene::heroes.size(); i++) {
+		if (TestScene::heroes[i] == NULL) {
+			indexOfheroesToRemove.push_back(i);
 		}
 	}
 
-	for (int i = 0; i < indexOfHeroesToRemove.size(); i++) {
-		heroes.erase(heroes.begin() + i);
+	for (int i = 0; i < indexOfheroesToRemove.size(); i++) {
+		TestScene::heroes.erase(TestScene::heroes.begin() + i);
 	}
 
-	cout << "Test Scene Fireball: " << fireball->getPosition() << endl;
+	
 	for (auto t : entityTrapsList) {
 		// Set to 18 as its half of tilesize (32)
 		const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
@@ -389,24 +395,16 @@ void TestScene::Update(const double& dt) {
 				}
 
 				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 3"].myKeyCode)) {
-					fireball = makeEntity();
-					fireball->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), (fireball), 0);
+					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize/2, tileSize/2));
+					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), 0);
 					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Up");
 					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
 				}
 
 				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 4"].myKeyCode)) {
-
-					//Fireball Entity Creation
-					fireball = makeEntity();
-					fireball->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize)); //True because fireball will be moving
-
-
 					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), (fireball),1 );
+					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), 1);
 					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Down");
 					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
@@ -414,24 +412,16 @@ void TestScene::Update(const double& dt) {
 
 				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 5"].myKeyCode)) {
 
-
-					auto fireball = makeEntity();
-					fireball->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize));
-					//fireball->setPosition(t->getPosition()+Vector2f(0,tileSize));
-					//fireball->addComponent<SpriteComponent>();
-
 					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), (fireball),2);
+					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), 2);
 					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Left");
 					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
 				}
 
 				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 6"].myKeyCode)) {
-					auto fireball = makeEntity();
-					fireball->addComponent<PhysicsComponent>(true, Vector2f(tileSize, tileSize));
 					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
-					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), (fireball),3);
+					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), 3);
 					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Right");
 					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / DIVIDER, tileSize));
@@ -506,7 +496,14 @@ void TestScene::SpawnHero(int i) {
 
 	player->addComponent<PlayerPhysicsComponent>(Vector2f(float(tileSize) / 2.0f, float(tileSize) * (3.0f / 4.0f)),doors);	//HOW IT WAS ORIGINALLY IMPLEMENTED
 
-	player->addComponent<AIComponent>();
-	heroes.push_back(player);				//When using heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
+
+	if (xboxPlayer) {
+		xboxPlayer = false;
+	}
+	else {
+		player->addComponent<AIComponent>();
+	}
+
+	TestScene::heroes.push_back(player);				//When using TestScene::heroes list it thorws an error when pressing Escape. If we don't add any components to the player the rror doesn't happen. We believe this is a reference error. After debugging
 											//we confirmed that the references are not deleted so that should not be causing an issue.
 }

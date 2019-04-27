@@ -76,13 +76,17 @@ public:
 
 class FireballTrapComponent : public TrapComponent {
 private:
+	static std::vector<std::shared_ptr<Entity>> heroes_list;
 	bool _test = false;
 	std::shared_ptr<Entity> _fireball;
 	int _rotation; //0 is Up, 1 is Down, 2 is Left, 3 is Right
 	bool _fired = false;
+	float _movement = 0.0f;
+	std::vector<std::shared_ptr<Entity>>* _heroes;
+	float _fireCooldown = 5;
 
 public:
 	void TrapPlayer(Entity* e, sf::Vector2f direction) override;
-	explicit FireballTrapComponent(Entity* p,  const sf::Vector2f& size, std::shared_ptr<Entity> fire, int rot);
+	explicit FireballTrapComponent(Entity* p,  const sf::Vector2f& size, int rot);
 	void update(double dt) override;
 };
