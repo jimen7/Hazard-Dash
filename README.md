@@ -21,6 +21,7 @@ Big thanks to Emily Frances Ippolito who made the music of the game. You can see
 The main menu music and voice acting was performed by Michal Lange.
 
 The Graphics Game Assets were taken from:
+
 Installing Tool:
 http://www.jrsoftware.org/isdl.php?fbclid=IwAR1lSPAqdsHt3J9n-406enh5dLVBi-CPB_sddvPcFUPbADCUl9F3_eSAkKk#stable
 
