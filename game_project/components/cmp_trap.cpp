@@ -23,6 +23,8 @@ using namespace Physics;
 using namespace std::this_thread; // sleep_for, sleep_until
 using namespace std::chrono; // nanoseconds, system_clock, seconds
 
+float fireball_speed = 300.0f;
+
 
 std::vector<std::shared_ptr<Entity>> FireballTrapComponent::heroes_list;;
 
@@ -80,6 +82,12 @@ void FireballTrapComponent::update(double dt) {
 			_fired = true;
 			_fireCooldown = 0;
 			_movement = 0;
+			//Sound Effect
+			if (!_buffer.loadFromFile("res/Sounds/Effects/Fireball.wav"))
+				throw("Spikes Music File does not exist.");
+
+			_sound.setBuffer(_buffer);
+			_sound.play();
 		}
 
 		sf::Vector2f previousPosition = _parent->getPosition();
@@ -97,16 +105,16 @@ void FireballTrapComponent::update(double dt) {
 
 
 			if (_rotation == 0) { //Fireball UP
-				_parent->setPosition(previousPosition +Vector2f(0,-_movement* 100.f));
+				_parent->setPosition(previousPosition +Vector2f(0,-_movement* fireball_speed));
 			}
 			else if (_rotation == 1) { //Fireball DOWN
-				_parent->setPosition(previousPosition + Vector2f(0, _movement * 100.f));
+				_parent->setPosition(previousPosition + Vector2f(0, _movement * fireball_speed));
 			}
 			else if (_rotation == 2) { //Fireball Left
-				_parent->setPosition(previousPosition + Vector2f(-_movement * 100.0f, 0.f));
+				_parent->setPosition(previousPosition + Vector2f(-_movement * fireball_speed, 0.f));
 			}
 			else if (_rotation == 3) { //Fireball Right
-				_parent->setPosition(previousPosition + Vector2f(_movement * 100.0f, 0.f));
+				_parent->setPosition(previousPosition + Vector2f(_movement * fireball_speed, 0.f));
 			}
 
 
@@ -114,16 +122,16 @@ void FireballTrapComponent::update(double dt) {
 				sf::Vector2f dir;
 
 				if (_rotation == 0) { //Fireball UP
-					dir = (hero_ptr)->getPosition() - (_parent->getPosition() + Vector2f(0, -_movement * 100.f));;
+					dir = (hero_ptr)->getPosition() - (_parent->getPosition() + Vector2f(0, -_movement * fireball_speed));;
 				}
 				else if (_rotation == 1) { //Fireball DOWN
-					 dir = (hero_ptr)->getPosition() - (_parent->getPosition() + Vector2f(0, _movement * 100.f));;
+					 dir = (hero_ptr)->getPosition() - (_parent->getPosition() + Vector2f(0, _movement * fireball_speed));;
 				}
 				else if (_rotation == 2) { //Fireball Left
-					 dir = (hero_ptr)->getPosition() - (_parent->getPosition() + Vector2f(-_movement * 100.0f, 0.f));;
+					 dir = (hero_ptr)->getPosition() - (_parent->getPosition() + Vector2f(-_movement * fireball_speed, 0.f));;
 				}
 				else if (_rotation == 3) { //Fireball Right
-					 dir = (hero_ptr)->getPosition() - (_parent->getPosition() + Vector2f(_movement * 100.0f, 0.f));
+					 dir = (hero_ptr)->getPosition() - (_parent->getPosition() + Vector2f(_movement * fireball_speed, 0.f));
 				}
 				
 				const auto l = sf::length(dir);
@@ -346,7 +354,7 @@ SpikeTrapComponent::SpikeTrapComponent(Entity* p, const sf::Vector2f& size) : Tr
 	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
 	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 
-	_damage = 20;
+	_damage = 50;
 	_original_trap_colour = sf::Color::Blue;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
@@ -398,7 +406,7 @@ MineTrapComponent::MineTrapComponent(Entity* p, const sf::Vector2f& size) : Trap
 	//s->setTextureRect(sf::IntRect(0, 0, 40, 40));
 	s->setTextureRect(sf::IntRect(0, 0, 32, 32));
 	
-	_damage = 50;
+	_damage = 25;
 	_original_trap_colour = sf::Color::Yellow;
 	//_pushForce = 1.03f;
 	_pushForce = 60.0f;
