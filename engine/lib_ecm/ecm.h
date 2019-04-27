@@ -93,12 +93,12 @@ public:
 
 
   template<typename T>
-  const std::shared_ptr<T> del_components() const {
+  const std::shared_ptr<T> del_components() {
 	  static_assert(std::is_base_of<Component, T>::value, "T != component");
 	  std::shared_ptr<T> ret;
 	  for (const auto c : _components) {
 		  if (typeid(*c) == typeid(T)) {
-			  ret=std::dynamic_pointer_cast<T>(c);
+			  ret = std::dynamic_pointer_cast<T>(c);
 			  _components.erase(c);
 			  //Delete C from _components
 		  }

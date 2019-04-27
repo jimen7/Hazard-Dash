@@ -13,6 +13,7 @@
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
+#include <fstream>
 #include <thread>
 #include <random>
 
@@ -23,7 +24,7 @@ using namespace sf;
 
 //float tileSize;
 
-bool xboxPlayer=false;
+bool xboxPlayer = false;
 
 
 std::vector<sf::Text> trapDescriptions;
@@ -41,7 +42,7 @@ static shared_ptr<Entity> player;
 
 float dtPauseMenu = 0.0f;
 
-float dtFireballChoice = 0.0f;
+
 
 int heroes_num_test = 5;
 std::vector<std::shared_ptr<Entity>> TestScene::heroes;
@@ -76,16 +77,38 @@ int heroes_num = 10;
 bool gameplayPhase = false;
 float timerGame = 2.0f;
 float timerSpawn = 0.0f;
+shared_ptr<Entity> RoundStatus;
+int score = 0;
+int highscore = 0;
+int checkScore = 0;
+
 
 void TestScene::Load() {
-	//sound effects
+	//Read in the highscore text
+	ifstream myfile("highscore.txt");
+	if (!myfile.is_open()) {
+		ofstream myfile2("highscore.txt");
+		if (myfile2.is_open())
+		{
+			myfile2 << "0";
+		}
+		myfile2.close();
+	}
+	else {
+		string line;
+		while (getline(myfile, line))
+		{
+			highscore = std::stoi(line);
+		}
+		myfile.close();
+	}
 
 
-	fireball = makeEntity();
 	if (!music.openFromFile("res/Sounds/Theme.wav")) {
 		throw("Music File does not exist.");
 	}
 	music.setLoop(true);
+	music.setVolume(Engine::getVolume());
 	// float tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;		//Original
 	 //tileSize = (Engine::getWindowSize().y / 720.0f) * 20.0f;
 	Scene::Load();
@@ -93,7 +116,7 @@ void TestScene::Load() {
 	cout << " Scene 1 Load" << endl;
 	ls::loadLevelFile("res/main_level.txt", tileSize);
 	ls::loadLevelFile("res/tiled/Dungeon_final.csv", tileSize);
-	
+
 	// PauseMenu stuff
 	texMenu = make_shared<sf::Texture>();
 	if (!texMenu->loadFromFile("res/Sprites/Menu_Pause.png"))
@@ -101,6 +124,7 @@ void TestScene::Load() {
 		throw ("Can't load menu image.");
 	}
 	EntMenu = makeEntity2();
+	RoundStatus = makeEntity();
 	auto s = EntMenu->addComponent<SpriteComponent>();
 	s->setTexure(texMenu);
 	EntMenu->setPosition(sf::Vector2f(320, 180));
@@ -109,6 +133,7 @@ void TestScene::Load() {
 	auto t2 = EntMenu->addComponent<TextComponent>("Restart");
 	auto t3 = EntMenu->addComponent<TextComponent>("Main Menu");
 	auto t4 = EntMenu->addComponent<TextComponent>("Exit Game");
+	auto t5 = RoundStatus->addComponent<TextComponent>("Round: " + to_string(roundNo) + ", Score: " + to_string(score) + ", HighScore: " + to_string(highscore));
 
 	for (int i = 0; i < 4; i++) {
 		EntMenu->GetCompatibleComponent<TextComponent>()[i]->setSize(100);
@@ -118,6 +143,9 @@ void TestScene::Load() {
 	t2->setPosition(sf::Vector2f(730, 360));
 	t3->setPosition(sf::Vector2f(670, 500));
 	t4->setPosition(sf::Vector2f(670, 640));
+	t5->setSize(50.0f);
+	t5->setColour(Color::Black);
+	t5->setPosition(sf::Vector2f(100, 30));
 
 
 	// Sorting the door tiles so the player goes through them sequentially
@@ -261,7 +289,6 @@ void TestScene::Update(const double& dt) {
 
 
 
-	dtFireballChoice += dt;
 	dtPauseMenu += dt;
 	if (sf::Keyboard::isKeyPressed(Engine::_Keysss["Pause"].myKeyCode)) {
 		if (!Engine::getPause() && dtPauseMenu > 0.2f) {
@@ -303,9 +330,18 @@ void TestScene::Update(const double& dt) {
 				Engine::setPause(false);
 			}
 			else if (worldPos.x > 735 && worldPos.x < 1140 && worldPos.y > 390 && worldPos.y < 463) {
-				// TODO
+				score = 0;
+				roundNo = 1;
+				gameplayPhase = false;
+				timerGame = 6.0f;
+				Engine::ChangeScene(&menu);
+				Engine::ChangeScene(&testLevel);
 			}
 			else if (worldPos.x > 676 && worldPos.x < 1189 && worldPos.y > 526 && worldPos.y < 607) {
+				score = 0;
+				roundNo = 1;
+				gameplayPhase = false;
+				timerGame = 6.0f;
 				Engine::ChangeScene(&menu);
 				music.stop();
 			}
@@ -322,20 +358,51 @@ void TestScene::Update(const double& dt) {
 	const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
 
 
-	if (!gameplayPhase) {
+	if (!gameplayPhase && !Engine::_gamePause) {
 		timerGame -= dt;
 		if (timerGame < 0) {
-			timerGame = 60.0f + 5.0f * roundNo;
+			timerGame = 100.0f + 10.0f * roundNo;
 			gameplayPhase = true;
 			heroes_num = 10 * roundNo;
+			checkScore = 0;
 		}
 	}
-	else {
+	else if (!Engine::_gamePause) {
 		timerGame -= dt;
 		timerSpawn += dt;
+
+		int inc = 0;
+		for (auto h : TestScene::heroes) {
+			if (!h->isAlive())
+				inc++;
+			if (h->getPosition().y < 150) {
+				if (score > highscore) {
+					highscore = score;
+					ofstream myfile2("highscore.txt");
+					if (myfile2.is_open())
+					{
+						myfile2 << to_string(score);
+					}
+					myfile2.close();
+				}
+				RoundStatus->GetCompatibleComponent<TextComponent>()[0]->SetText("Game Over, Score: " + to_string(score) + ", HighScore: " + to_string(highscore));
+				timerGame = 100000;
+				//SaveScore();
+			}
+
+		}
+		//Check if score has changed
+		if (checkScore < inc) {
+			checkScore++;
+			score += 50;
+			RoundStatus->GetCompatibleComponent<TextComponent>()[0]->SetText("Round: " + to_string(roundNo) + ", Score: " + to_string(score) + ", HighScore: " + to_string(highscore));
+		}
+
+		if (inc == heroes.size() && inc > 9)
+			timerGame = -1;
+
 		if (timerSpawn > 1.0f && heroes_num > 0) {
 			timerSpawn = 0.0f;
-			cout << "Spawn" << endl;
 			SpawnHero(heroes_num % 3);
 			tile_sorted = false;
 			heroes_num--;
@@ -343,15 +410,18 @@ void TestScene::Update(const double& dt) {
 		if (timerGame < 0) {
 			timerGame = 10.0f;
 			gameplayPhase = false;
-			for (auto h : heroes) {
+			for (auto h : TestScene::heroes) {
 				h->setForDelete();
 				h->setAlive(false);
 			}
 			TestScene::heroes.clear();
+			roundNo++;
 
 		}
 
 	}
+
+
 
 
 	for (int i = 0; i < TestScene::heroes.size(); i++) {
@@ -364,7 +434,7 @@ void TestScene::Update(const double& dt) {
 		TestScene::heroes.erase(TestScene::heroes.begin() + i);
 	}
 
-	
+
 	for (auto t : entityTrapsList) {
 		// Set to 18 as its half of tilesize (32)
 		const auto dir = Vector2f(worldPos) - t->getPosition();//Gets mouse potition in relation to tile's
@@ -373,12 +443,12 @@ void TestScene::Update(const double& dt) {
 			t->GetCompatibleComponent<TextComponent>()[0]->setSize(10);
 			if (!(t->GetCompatibleComponent<TrapComponent>()[0]->isPlaced())) {
 				if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {
-					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / (DIVIDER), tileSize*2.0f));
-					t->GetCompatibleComponent<TextComponent>()[0]->SetText("1: Mine\n2: Spikes\n3: Fireball Cannon Up\n4Fireball Cannon Down\n5Fireball Cannon Left\n6Fireball Cannon Right\n");
+					t->GetCompatibleComponent<TextComponent>()[0]->setPosition(t->getPosition() - Vector2f(tileSize / (DIVIDER), tileSize*3.0f));
+					t->GetCompatibleComponent<TextComponent>()[0]->SetText("1: Mine\n2: Spikes\n3: Fireball Cannon Up\n4: Fireball Cannon Down\n5: Fireball Cannon Left\n6: Fireball Cannon Right\n");
 				}
 
 				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 1"].myKeyCode)) {
-					
+
 					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 					t->addComponent<MineTrapComponent>(Vector2f(tileSize, tileSize));
 					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
@@ -395,7 +465,7 @@ void TestScene::Update(const double& dt) {
 				}
 
 				if (Keyboard::isKeyPressed(Engine::_Keysss["Option 3"].myKeyCode)) {
-					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize/2, tileSize/2));
+					t->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
 					t->addComponent<FireballTrapComponent>(Vector2f(tileSize, tileSize), 0);
 					t->GetCompatibleComponent<TrapComponent>()[0]->setBoolPlaced();
 					t->GetCompatibleComponent<TextComponent>()[0]->SetText("Fireball Cannon Up");
@@ -494,7 +564,7 @@ void TestScene::SpawnHero(int i) {
 	}
 
 
-	player->addComponent<PlayerPhysicsComponent>(Vector2f(float(tileSize) / 2.0f, float(tileSize) * (3.0f / 4.0f)),doors);	//HOW IT WAS ORIGINALLY IMPLEMENTED
+	player->addComponent<PlayerPhysicsComponent>(Vector2f(float(tileSize) / 2.0f, float(tileSize) * (3.0f / 4.0f)), doors);	//HOW IT WAS ORIGINALLY IMPLEMENTED
 
 
 	if (xboxPlayer) {

@@ -4,6 +4,7 @@
 #include "../game.h"
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 
 using namespace std;
@@ -13,20 +14,36 @@ shared_ptr<sf::Texture> tex2;
 Sprite background2;
 shared_ptr<Entity> backEnt2;
 shared_ptr<Entity> txt;
+shared_ptr<Entity> slider;
+shared_ptr<sf::Texture> sliderTex;
 float dtOptions;
+extern sf::Music musicMenu;
+
 
 
 void OptionsScene::Load() {
+	
+
 	dtOptions = 0.0f;
 	{
 		tex2 = make_shared<sf::Texture>();
+		sliderTex = make_shared<sf::Texture>();
 		if (!tex2->loadFromFile("res/Sprites/Menu_Options.png"))
 		{
 			throw ("Can't load menu image.");
 		}
+		if (!sliderTex->loadFromFile("res/Sprites/slider.png"))
+		{
+			throw ("Can't load slider image.");
+		}
 		backEnt2 = makeEntity();
+		slider = makeEntity();
 		auto s = backEnt2->addComponent<SpriteComponent>();
+		auto s2 = slider->addComponent<SpriteComponent>();
+		s2->setTexure(sliderTex);
 		s->setTexure(tex2);
+		slider->setPosition(sf::Vector2f((musicMenu.getVolume() * ((1377.0f - 847.0f) / 100.0f)) + 847.0f, 290));
+		cout << slider->getPosition() << endl;
 		// Text
 		txt = makeEntity();
 		auto t1 = txt->addComponent<TextComponent>("Volume");
@@ -76,6 +93,9 @@ void OptionsScene::Update(const double& dt) {
 	// convert it to world coordinate, because we scale in the render from 1080p to the target resolution
 	const sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(pixelPos);
 
+	musicMenu.setVolume((slider->getPosition().x - 847.0f) / (1377.0f - 847.0f) * 100.0f);
+	Engine::setVolume(musicMenu.getVolume());
+
 	if (worldPos.x > 847.0f && worldPos.x < 1377.0f && worldPos.y > 304.0f && worldPos.y < 349.0f) {
 		txt->GetCompatibleComponent<TextComponent>()[0]->setColour(Color::Red);
 	}
@@ -111,7 +131,10 @@ void OptionsScene::Update(const double& dt) {
 
 	if (sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton) && dtOptions > 0.2f) {
 		dtOptions = 0.0f;
-		if (worldPos.x > 834.0f && worldPos.x < 1021.0f && worldPos.y > 417.0f && worldPos.y < 453.0f) {
+		if (worldPos.x > 847.0f && worldPos.x < 1377.0f && worldPos.y > 304.0f && worldPos.y < 349.0f) {
+			slider->setPosition(sf::Vector2f(worldPos.x, slider->getPosition().y));
+		}
+		else if (worldPos.x > 834.0f && worldPos.x < 1021.0f && worldPos.y > 417.0f && worldPos.y < 453.0f) {
 			const sf::Vector2u gamesize(GAMEX, GAMEY);
 			const sf::Vector2u screensize = sf::Vector2u(1280, 720);
 			Engine::GetWindow().setSize(screensize);

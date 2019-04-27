@@ -18,6 +18,7 @@ static float loadingspinner = 0.f;
 static float loadingTime;
 static RenderWindow* _window;
 bool Engine::_gamePause;
+float Engine::_volume;
 
 std::map<std::string, Engine::MyKeys>Engine::_Keysss;
 Engine::MyKeys Engine::_key;
@@ -176,7 +177,7 @@ void Engine::Start(unsigned int width, unsigned int height,
   _key.myEventType = sf::Event::KeyPressed;
   _key.myJoysticAxis = sf::Joystick::PovY;
   _key.JoysticButtonNum = 7;
-  _key.myKeyCode = sf::Keyboard::P;
+  _key.myKeyCode = sf::Keyboard::Escape;
   _Keysss["Pause"] = _key;
 
   _key.myInputType = KeyboardInput;

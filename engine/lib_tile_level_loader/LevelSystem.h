@@ -29,7 +29,8 @@ public:
 	UPRIGHT = 3,
 	SPECIAL = 4,
 	TELEPORT = 38,
-	UP = 5
+	UP = 5,
+	WIZARD = 66
   };
 
   static Tile getTile(sf::Vector2ul);
