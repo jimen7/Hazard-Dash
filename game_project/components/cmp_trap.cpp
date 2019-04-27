@@ -250,7 +250,7 @@ void TrapComponent::update(double dt)
 		else {
 
 
-			if (_damage == 20) { //If spikes are actiovated move them over tile
+			if (_damage == 50) { //If spikes are actiovated move them over tile
 				if (l < 25.0 && sf::Mouse::isButtonPressed(Engine::_Keysss["Click"].myMouseButton)) {//Spikes only activate when pressed
 					if (!_buffer.loadFromFile("res/Sounds/Effects/Spikes.wav"))
 						throw("Spikes Music File does not exist.");
@@ -279,7 +279,7 @@ void TrapComponent::update(double dt)
 					other = e2;
 				}
 				const auto dir = other->getPosition() - _parent->getPosition();
-				if (_damage != 20) {	//NORMALLOOPCheck its not spikes
+				if (_damage != 50) {	//NORMALLOOPCheck its not spikes
 					TrapPlayer(other, dir);
 				}
 				else {
