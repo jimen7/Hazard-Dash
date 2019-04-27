@@ -1,4 +1,5 @@
 # Hazard-Dash
+![58441287_659346437850079_3438665445559762944_n](https://user-images.githubusercontent.com/46566684/56854233-23fffd00-692b-11e9-820f-542cb1ec3dac.png)
 
 This game was made by Michal Lange and Dimitrios Tsolis as part of the Games Engineering Module(SET09121) in Edinburgh Napier University.
 
