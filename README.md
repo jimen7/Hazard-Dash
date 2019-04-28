@@ -1,7 +1,7 @@
 # Hazard-Dash
 ![58441287_659346437850079_3438665445559762944_n](https://user-images.githubusercontent.com/46566684/56854233-23fffd00-692b-11e9-820f-542cb1ec3dac.png)
 
-This game was made by Michal Lange and Dimitrios Tsolis as part of the Games Engineering Module(SET09121) in Edinburgh Napier University.
+This game was made by Michal Lange and Dimitrios Tsolis as part of the Games Engineering Module(SET09121) in Edinburgh Napier University. A demo of this game can be seen in https://www.youtube.com/watch?v=4k1kY0e2IAQ .
 
 This game is a 2D Platformer game, in which the player has to place Traps to eliminate the heroes and prevent the from reaching the top floor of the castle. This game's engine was written by the developers, and uses the SFML and BOX2D libraries.
 
